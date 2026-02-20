@@ -1,0 +1,8 @@
+node_modules/
+.next/
+out/
+cdk.out/
+*.js.map
+*.d.ts
+.env
+.env.local
