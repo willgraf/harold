@@ -12,21 +12,34 @@ describe("PostgresSignupRepository", () => {
     mockQuery.mockReset();
   });
 
-  it("saves a signup record", async () => {
+  it("returns true for new signup", async () => {
     mockQuery.mockResolvedValue({ rowCount: 1 });
 
     const repo = new PostgresSignupRepository();
-    await repo.saveSignup({
+    const result = await repo.saveSignup({
       email: "test@example.com",
       timestamp: "2026-01-01T00:00:00Z",
       ip: "127.0.0.1",
     });
 
-    expect(mockQuery).toHaveBeenCalledTimes(1);
+    expect(result).toBe(true);
     expect(mockQuery).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO signups"),
       ["test@example.com", "2026-01-01T00:00:00Z", "127.0.0.1"]
     );
+  });
+
+  it("returns false for duplicate email", async () => {
+    mockQuery.mockResolvedValue({ rowCount: 0 });
+
+    const repo = new PostgresSignupRepository();
+    const result = await repo.saveSignup({
+      email: "test@example.com",
+      timestamp: "2026-01-01T00:00:00Z",
+      ip: "127.0.0.1",
+    });
+
+    expect(result).toBe(false);
   });
 
   it("throws if DATABASE_URL not set", () => {

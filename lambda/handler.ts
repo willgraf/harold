@@ -39,7 +39,11 @@ export async function handler(
     const timestamp = new Date().toISOString();
     const ip = event.requestContext?.identity?.sourceIp || "unknown";
 
-    await repository.saveSignup({ email, timestamp, ip });
+    const isNew = await repository.saveSignup({ email, timestamp, ip });
+
+    if (!isNew) {
+      return response(200, { message: "Already registered" });
+    }
 
     const topicArn = process.env.SNS_TOPIC_ARN;
     if (topicArn) {

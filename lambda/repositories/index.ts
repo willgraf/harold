@@ -5,7 +5,7 @@ export interface SignupRecord {
 }
 
 export interface SignupRepository {
-  saveSignup(record: SignupRecord): Promise<void>;
+  saveSignup(record: SignupRecord): Promise<boolean>;
 }
 
 export function createRepository(): SignupRepository {

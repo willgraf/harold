@@ -21,8 +21,8 @@ describe("signup handler", () => {
     mockPublish.mockReset();
   });
 
-  it("returns 200 for valid email", async () => {
-    mockSaveSignup.mockResolvedValue(undefined);
+  it("returns 200 for valid new email", async () => {
+    mockSaveSignup.mockResolvedValue(true);
     mockPublish.mockResolvedValue({});
 
     const event = {
@@ -33,8 +33,24 @@ describe("signup handler", () => {
     const result = await handler(event as any);
 
     expect(result.statusCode).toBe(200);
+    expect(JSON.parse(result.body).message).toBe("Success");
     expect(mockSaveSignup).toHaveBeenCalledTimes(1);
     expect(mockPublish).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns 200 with 'Already registered' for duplicate email", async () => {
+    mockSaveSignup.mockResolvedValue(false);
+
+    const event = {
+      body: JSON.stringify({ email: "test@example.com" }),
+      requestContext: { identity: { sourceIp: "127.0.0.1" } },
+    };
+
+    const result = await handler(event as any);
+
+    expect(result.statusCode).toBe(200);
+    expect(JSON.parse(result.body).message).toBe("Already registered");
+    expect(mockPublish).not.toHaveBeenCalled();
   });
 
   it("returns 400 for missing email", async () => {
@@ -60,7 +76,7 @@ describe("signup handler", () => {
   });
 
   it("returns CORS headers", async () => {
-    mockSaveSignup.mockResolvedValue(undefined);
+    mockSaveSignup.mockResolvedValue(true);
     mockPublish.mockResolvedValue({});
 
     const event = {
@@ -124,7 +140,7 @@ describe("signup handler", () => {
 
   it("skips SNS when no topic ARN is set", async () => {
     delete process.env.SNS_TOPIC_ARN;
-    mockSaveSignup.mockResolvedValue(undefined);
+    mockSaveSignup.mockResolvedValue(true);
 
     const event = {
       body: JSON.stringify({ email: "test@example.com" }),

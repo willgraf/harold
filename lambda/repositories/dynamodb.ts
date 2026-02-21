@@ -14,17 +14,30 @@ export class DynamoDBSignupRepository implements SignupRepository {
     this.client = new DynamoDBClient({});
   }
 
-  async saveSignup(record: SignupRecord): Promise<void> {
-    await this.client.send(
-      new PutItemCommand({
-        TableName: this.tableName,
-        Item: {
-          email: { S: record.email },
-          timestamp: { S: record.timestamp },
-          ip: { S: record.ip },
-        },
-        ConditionExpression: "attribute_not_exists(email)",
-      })
-    );
+  async saveSignup(record: SignupRecord): Promise<boolean> {
+    try {
+      await this.client.send(
+        new PutItemCommand({
+          TableName: this.tableName,
+          Item: {
+            email: { S: record.email },
+            timestamp: { S: record.timestamp },
+            ip: { S: record.ip },
+          },
+          ConditionExpression: "attribute_not_exists(email)",
+        })
+      );
+      return true;
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "name" in err &&
+        (err as { name: string }).name === "ConditionalCheckFailedException"
+      ) {
+        return false;
+      }
+      throw err;
+    }
   }
 }

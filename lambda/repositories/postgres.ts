@@ -12,10 +12,11 @@ export class PostgresSignupRepository implements SignupRepository {
     this.pool = new Pool({ connectionString });
   }
 
-  async saveSignup(record: SignupRecord): Promise<void> {
-    await this.pool.query(
+  async saveSignup(record: SignupRecord): Promise<boolean> {
+    const result = await this.pool.query(
       "INSERT INTO signups (email, signed_up_at, ip) VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING",
       [record.email, record.timestamp, record.ip]
     );
+    return (result.rowCount ?? 0) > 0;
   }
 }
