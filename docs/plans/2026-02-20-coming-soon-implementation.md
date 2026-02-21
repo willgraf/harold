@@ -1,4 +1,4 @@
-# Coming Soon Page Builder — Implementation Plan
+# Harold — Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 

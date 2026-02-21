@@ -1,5 +1,5 @@
 {
-  "name": "coming-soon-infra",
+  "name": "harold-infra",
   "private": true,
   "scripts": {
     "build": "tsc",

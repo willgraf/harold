@@ -1,5 +1,5 @@
 {
-  "name": "coming-soon-lambda",
+  "name": "harold-lambda",
   "private": true,
   "scripts": {
     "test": "jest --config jest.config.js",

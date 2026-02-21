@@ -7,5 +7,5 @@ import { loadInfraConfig } from "../lib/config";
 const app = new cdk.App();
 const config = loadInfraConfig();
 
-new StaticSiteStack(app, "ComingSoonSite");
-new ApiStack(app, "ComingSoonApi", { config });
+new StaticSiteStack(app, "HaroldSite");
+new ApiStack(app, "HaroldApi", { config });

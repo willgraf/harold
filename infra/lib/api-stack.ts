@@ -21,7 +21,7 @@ export class ApiStack extends cdk.Stack {
 
     // SNS Topic
     const signupTopic = new sns.Topic(this, "SignupTopic", {
-      displayName: "Coming Soon Signup Notifications",
+      displayName: "Harold Signup Notifications",
     });
 
     // DynamoDB Table (only if using dynamodb backend)
@@ -63,7 +63,7 @@ export class ApiStack extends cdk.Stack {
 
     // API Gateway
     const api = new apigateway.RestApi(this, "SignupApi", {
-      restApiName: "Coming Soon Signup API",
+      restApiName: "Harold Signup API",
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: ["POST", "OPTIONS"],

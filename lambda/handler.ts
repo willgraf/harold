@@ -46,7 +46,7 @@ export async function handler(
       await sns.send(
         new PublishCommand({
           TopicArn: topicArn,
-          Message: JSON.stringify({ email, timestamp, source: "coming-soon" }),
+          Message: JSON.stringify({ email, timestamp, source: "harold" }),
         })
       );
     }

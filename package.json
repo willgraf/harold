@@ -1,5 +1,5 @@
 {
-  "name": "coming-soon-builder",
+  "name": "harold",
   "private": true,
   "workspaces": ["site", "lambda", "infra"]
 }
