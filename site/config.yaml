@@ -1,0 +1,10 @@
+brandName: "YourBrand"
+tagline: "Something amazing is coming."
+ctaText: "Join the Waitlist"
+successMessage: "You're on the list!"
+colors:
+  primary: "#4F46E5"
+  background: "#FFFFFF"
+  text: "#111827"
+logoUrl: null
+apiUrl: ""
