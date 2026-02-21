@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "cdk": "cdk",
-    "test": "jest"
+    "test": "jest --config jest.config.js"
   },
   "dependencies": {
     "aws-cdk-lib": "^2",
@@ -12,9 +12,12 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22",
     "aws-cdk": "^2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.7"
   }
 }

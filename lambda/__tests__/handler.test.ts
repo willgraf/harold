@@ -72,4 +72,69 @@ describe("signup handler", () => {
 
     expect(result.headers!["Access-Control-Allow-Origin"]).toBe("*");
   });
+
+  it("OPTIONS preflight returns 200 with CORS headers", async () => {
+    const event = {
+      httpMethod: "OPTIONS",
+    };
+
+    const result = await handler(event as any);
+
+    expect(result.statusCode).toBe(200);
+    expect(result.headers!["Access-Control-Allow-Origin"]).toBe("*");
+    expect(result.headers!["Access-Control-Allow-Methods"]).toBe("POST, OPTIONS");
+  });
+
+  it("returns 500 when repository throws", async () => {
+    mockSaveSignup.mockRejectedValue(new Error("DB connection failed"));
+
+    const event = {
+      body: JSON.stringify({ email: "test@example.com" }),
+      requestContext: { identity: { sourceIp: "127.0.0.1" } },
+    };
+
+    const result = await handler(event as any);
+
+    expect(result.statusCode).toBe(500);
+    expect(JSON.parse(result.body).message).toBe("Internal server error");
+  });
+
+  it("handles null body gracefully with 400", async () => {
+    const event = {
+      body: null,
+      requestContext: { identity: { sourceIp: "127.0.0.1" } },
+    };
+
+    const result = await handler(event as any);
+
+    expect(result.statusCode).toBe(400);
+  });
+
+  it("handles malformed JSON body with 500", async () => {
+    const event = {
+      body: "not json",
+      requestContext: { identity: { sourceIp: "127.0.0.1" } },
+    };
+
+    const result = await handler(event as any);
+
+    expect(result.statusCode).toBe(500);
+    expect(JSON.parse(result.body).message).toBe("Internal server error");
+  });
+
+  it("skips SNS when no topic ARN is set", async () => {
+    delete process.env.SNS_TOPIC_ARN;
+    mockSaveSignup.mockResolvedValue(undefined);
+
+    const event = {
+      body: JSON.stringify({ email: "test@example.com" }),
+      requestContext: { identity: { sourceIp: "127.0.0.1" } },
+    };
+
+    const result = await handler(event as any);
+
+    expect(result.statusCode).toBe(200);
+    expect(mockSaveSignup).toHaveBeenCalledTimes(1);
+    expect(mockPublish).not.toHaveBeenCalled();
+  });
 });
