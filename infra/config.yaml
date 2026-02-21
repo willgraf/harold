@@ -1,0 +1,3 @@
+storageBackend: dynamodb  # or 'postgres'
+databaseUrl: ""           # only needed for postgres
+domainName: ""            # optional custom domain (future)
