@@ -1,5 +1,8 @@
 import { loadConfig } from "@/lib/config";
+import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import Features from "@/components/Features";
+import SocialProof from "@/components/SocialProof";
 import SignupForm from "@/components/SignupForm";
 import Footer from "@/components/Footer";
 
@@ -7,14 +10,19 @@ export default function Home() {
   const config = loadConfig();
 
   return (
-    <main
-      className="flex min-h-screen flex-col"
-      style={{ backgroundColor: "var(--color-background)" }}
-    >
+    <main className="min-h-screen" style={{ backgroundColor: "var(--color-background)" }}>
+      <Navbar brandName={config.brandName} logoUrl={config.logoUrl} />
       <Hero
         brandName={config.brandName}
         tagline={config.tagline}
+        headline={config.headline}
+        description={config.description}
         logoUrl={config.logoUrl}
+      />
+      <Features features={config.features} />
+      <SocialProof
+        line1={config.socialProof.line1}
+        line2={config.socialProof.line2}
       />
       <SignupForm
         ctaText={config.ctaText}
