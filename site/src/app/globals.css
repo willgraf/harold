@@ -1,36 +1,57 @@
 @import "tailwindcss";
 
-:root {
-  --color-primary: #D4593C;
-  --color-accent: #E8A84C;
-  --color-background: #09090B;
-  --color-surface: #13131A;
-  --color-text: #EDE9E1;
-  --color-text-muted: #7A756E;
-  --font-display: "DM Serif Display", Georgia, serif;
-  --font-body: "Instrument Sans", system-ui, sans-serif;
+@theme {
+  /* Colors — mapped from CSS custom properties set on <body> by layout.tsx */
+  --color-primary: var(--site-primary, #D4593C);
+  --color-accent: var(--site-accent, #E8A84C);
+  --color-background: var(--site-background, #09090B);
+  --color-surface: var(--site-surface, #13131A);
+  --color-foreground: var(--site-text, #EDE9E1);
+  --color-muted: var(--site-text-muted, #7A756E);
+
+  /* Fonts */
+  --font-display: var(--site-font-display, "DM Serif Display", Georgia, serif);
+  --font-body: var(--site-font-body, "Instrument Sans", system-ui, sans-serif);
+
+  /* Animations */
+  --animate-fade-up: fade-up 0.8s ease-out both;
+  --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-glow: glow-pulse 3s ease-in-out infinite;
+  --animate-gradient: gradient-shift 6s ease infinite;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-html {
-  scroll-behavior: smooth;
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-body {
-  font-family: var(--font-body);
-  background-color: var(--color-background);
-  color: var(--color-text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px color-mix(in srgb, var(--site-primary, #D4593C) 15%, transparent); }
+  50% { box-shadow: 0 0 40px color-mix(in srgb, var(--site-primary, #D4593C) 30%, transparent); }
 }
 
-/* Grain overlay */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Gradient text — requires background-clip which Tailwind doesn't fully support */
+.text-gradient {
+  background: linear-gradient(135deg, var(--site-text, #EDE9E1) 0%, var(--site-primary, #D4593C) 50%, var(--site-accent, #E8A84C) 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 6s ease infinite;
+}
+
+/* Grain texture overlay — pseudo-element requires custom CSS */
 body::before {
   content: "";
   position: fixed;
@@ -41,116 +62,4 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
-}
-
-/* Staggered reveal animations */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(212, 89, 60, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(212, 89, 60, 0.3);
-  }
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.animate-fade-up {
-  animation: fadeUp 0.8s ease-out both;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out both;
-}
-
-.animate-slide-left {
-  animation: slideInLeft 0.7s ease-out both;
-}
-
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-.delay-5 { animation-delay: 0.5s; }
-.delay-6 { animation-delay: 0.6s; }
-.delay-7 { animation-delay: 0.7s; }
-.delay-8 { animation-delay: 0.8s; }
-
-/* Gradient text utility */
-.text-gradient {
-  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-primary) 50%, var(--color-accent) 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 6s ease infinite;
-}
-
-/* Subtle glow on form */
-.glow-border {
-  animation: glowPulse 3s ease-in-out infinite;
-}
-
-/* Divider line */
-.divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-text-muted), transparent);
-  opacity: 0.2;
-}
-
-/* Selection color */
-::selection {
-  background: var(--color-primary);
-  color: var(--color-text);
-}
-
-/* Focus styles */
-:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-background);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-text-muted);
-  border-radius: 3px;
 }

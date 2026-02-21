@@ -19,23 +19,24 @@ export default function RootLayout({
   const fontsUrl = `https://fonts.googleapis.com/css2?family=${fontDisplay}:wght@400&family=${fontBody}:wght@400;500;600;700&display=swap`;
 
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href={fontsUrl} rel="stylesheet" />
       </head>
       <body
+        className="bg-background font-body text-foreground antialiased overflow-x-hidden"
         style={
           {
-            "--color-primary": config.colors.primary,
-            "--color-accent": config.colors.accent,
-            "--color-background": config.colors.background,
-            "--color-surface": config.colors.surface,
-            "--color-text": config.colors.text,
-            "--color-text-muted": config.colors.textMuted,
-            "--font-display": `"${config.fonts.display}", Georgia, serif`,
-            "--font-body": `"${config.fonts.body}", system-ui, sans-serif`,
+            "--site-primary": config.colors.primary,
+            "--site-accent": config.colors.accent,
+            "--site-background": config.colors.background,
+            "--site-surface": config.colors.surface,
+            "--site-text": config.colors.text,
+            "--site-text-muted": config.colors.textMuted,
+            "--site-font-display": `"${config.fonts.display}", Georgia, serif`,
+            "--site-font-body": `"${config.fonts.body}", system-ui, sans-serif`,
           } as React.CSSProperties
         }
       >

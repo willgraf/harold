@@ -13,48 +13,24 @@ export default function Features({ features }: FeaturesProps) {
 
   return (
     <section className="relative px-6 py-24 sm:px-10">
-      <div className="divider mx-auto mb-24 max-w-4xl" />
+      <div className="mx-auto mb-24 h-px max-w-4xl bg-gradient-to-r from-transparent via-muted/20 to-transparent" />
 
       <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-3">
         {features.map((feature, i) => (
           <div
             key={feature.title}
-            className={`animate-fade-up delay-${i + 2} group rounded-2xl border p-8 transition-all duration-500 hover:-translate-y-1`}
-            style={{
-              backgroundColor: "var(--color-surface)",
-              borderColor: "color-mix(in srgb, var(--color-text-muted) 10%, transparent)",
-            }}
+            className="animate-fade-up group rounded-2xl border border-muted/10 bg-surface p-8 transition-all duration-500 hover:-translate-y-1"
+            style={{ animationDelay: `${(i + 2) * 0.1}s` }}
           >
-            {/* Icon */}
-            <div
-              className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl text-lg transition-colors duration-500"
-              style={{
-                backgroundColor: "color-mix(in srgb, var(--color-primary) 10%, transparent)",
-                color: "var(--color-primary)",
-              }}
-            >
+            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-lg text-primary">
               {feature.icon}
             </div>
 
-            {/* Title */}
-            <h3
-              className="mb-3 text-xl font-normal"
-              style={{
-                fontFamily: "var(--font-display)",
-                color: "var(--color-text)",
-              }}
-            >
+            <h3 className="mb-3 text-xl font-normal text-foreground font-display">
               {feature.title}
             </h3>
 
-            {/* Description */}
-            <p
-              className="text-sm leading-relaxed"
-              style={{
-                color: "var(--color-text-muted)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
+            <p className="text-sm leading-relaxed text-muted font-body">
               {feature.description}
             </p>
           </div>
