@@ -3,6 +3,7 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
+import path from "path";
 import { Construct } from "constructs";
 
 export class StaticSiteStack extends cdk.Stack {
@@ -33,7 +34,7 @@ export class StaticSiteStack extends cdk.Stack {
     });
 
     new s3deploy.BucketDeployment(this, "DeploySite", {
-      sources: [s3deploy.Source.asset("../site/out")],
+      sources: [s3deploy.Source.asset(path.join(__dirname, "..", "..", "site", "out"))],
       destinationBucket: siteBucket,
       distribution: this.distribution,
       distributionPaths: ["/*"],

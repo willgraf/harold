@@ -59,5 +59,11 @@ export function loadConfig(): SiteConfig {
   const configPath = path.join(process.cwd(), "config.yaml");
   const raw = fs.readFileSync(configPath, "utf-8");
   const parsed = yaml.load(raw) as Record<string, unknown>;
-  return { ...defaults, ...parsed } as SiteConfig;
+  return {
+    ...defaults,
+    ...parsed,
+    colors: { ...defaults.colors, ...(parsed.colors as Record<string, unknown>) },
+    fonts: { ...defaults.fonts, ...(parsed.fonts as Record<string, unknown>) },
+    socialProof: { ...defaults.socialProof, ...(parsed.socialProof as Record<string, unknown>) },
+  } as SiteConfig;
 }

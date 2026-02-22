@@ -1,4 +1,4 @@
-import { PostgresSignupRepository } from "../../repositories/postgres";
+import { PostgresSignupRepository, _resetPool } from "../../repositories/postgres";
 
 const mockQuery = jest.fn();
 
@@ -10,6 +10,7 @@ describe("PostgresSignupRepository", () => {
   beforeEach(() => {
     process.env.DATABASE_URL = "postgres://localhost:5432/test";
     mockQuery.mockReset();
+    _resetPool();
   });
 
   it("returns true for new signup", async () => {
@@ -45,5 +46,15 @@ describe("PostgresSignupRepository", () => {
   it("throws if DATABASE_URL not set", () => {
     delete process.env.DATABASE_URL;
     expect(() => new PostgresSignupRepository()).toThrow();
+  });
+
+  it("reuses the same pool across instances", () => {
+    const { Pool } = require("pg");
+    Pool.mockClear();
+
+    new PostgresSignupRepository();
+    new PostgresSignupRepository();
+
+    expect(Pool).toHaveBeenCalledTimes(1);
   });
 });

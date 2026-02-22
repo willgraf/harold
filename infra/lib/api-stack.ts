@@ -4,6 +4,7 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as sns from "aws-cdk-lib/aws-sns";
+import path from "path";
 import { Construct } from "constructs";
 import { InfraConfig } from "./config";
 
@@ -37,7 +38,7 @@ export class ApiStack extends cdk.Stack {
 
     // Lambda
     const signupHandler = new nodejs.NodejsFunction(this, "SignupHandler", {
-      entry: "../lambda/handler.ts",
+      entry: path.join(__dirname, "..", "..", "lambda", "handler.ts"),
       handler: "handler",
       runtime: lambda.Runtime.NODEJS_22_X,
       environment: {

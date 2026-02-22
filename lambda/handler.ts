@@ -47,12 +47,16 @@ export async function handler(
 
     const topicArn = process.env.SNS_TOPIC_ARN;
     if (topicArn) {
-      await sns.send(
-        new PublishCommand({
-          TopicArn: topicArn,
-          Message: JSON.stringify({ email, timestamp, source: "harold" }),
-        })
-      );
+      try {
+        await sns.send(
+          new PublishCommand({
+            TopicArn: topicArn,
+            Message: JSON.stringify({ email, timestamp, source: "harold" }),
+          })
+        );
+      } catch (snsErr) {
+        console.error("SNS publish failed (signup saved):", snsErr);
+      }
     }
 
     return response(200, { message: "Success" });

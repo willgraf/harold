@@ -138,6 +138,22 @@ describe("signup handler", () => {
     expect(JSON.parse(result.body).message).toBe("Internal server error");
   });
 
+  it("returns 200 when SNS publish fails", async () => {
+    mockSaveSignup.mockResolvedValue(true);
+    mockPublish.mockRejectedValue(new Error("SNS timeout"));
+
+    const event = {
+      body: JSON.stringify({ email: "test@example.com" }),
+      requestContext: { identity: { sourceIp: "127.0.0.1" } },
+    };
+
+    const result = await handler(event as any);
+
+    expect(result.statusCode).toBe(200);
+    expect(JSON.parse(result.body).message).toBe("Success");
+    expect(mockSaveSignup).toHaveBeenCalledTimes(1);
+  });
+
   it("skips SNS when no topic ARN is set", async () => {
     delete process.env.SNS_TOPIC_ARN;
     mockSaveSignup.mockResolvedValue(true);
