@@ -2,7 +2,7 @@
 
 The launch page builder that heralds your next big thing. (His friends call him Harold.)
 
-A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS. Edit two YAML config files, deploy with CDK, and start collecting emails.
+A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS. Edit two YAML config files, deploy with CDK, and start collecting emails. Requires **Node 22**.
 
 ## Quick Start
 
@@ -15,7 +15,7 @@ A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS.
    ```
 5. Build the site:
    ```bash
-   cd site && npm run build
+   npm -w site run build
    ```
 6. Deploy:
    ```bash
@@ -74,7 +74,7 @@ CREATE TABLE signups (
 
 ## SNS Integration Hook
 
-Every signup publishes to an SNS topic. Subscribe your own endpoints to get notified:
+New signups publish to an SNS topic (duplicates are skipped). Subscribe your own endpoints to get notified:
 
 ```bash
 # Subscribe a webhook
