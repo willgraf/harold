@@ -57,6 +57,65 @@ domainName: example.com
     expect(config.databaseUrl).toBe("postgres://localhost:5432/mydb");
   });
 
+  it("defaults emailVerification to disabled", () => {
+    mockReadFileSync.mockReturnValue(VALID_YAML);
+
+    const config = loadInfraConfig();
+
+    expect(config.emailVerification.enabled).toBe(false);
+    expect(config.emailVerification.senderEmail).toBe("");
+    expect(config.emailVerification.tokenExpiryHours).toBe(24);
+  });
+
+  it("throws when emailVerification enabled without senderEmail", () => {
+    mockReadFileSync.mockReturnValue(`
+storageBackend: dynamodb
+siteUrl: https://example.com
+emailVerification:
+  enabled: true
+`);
+    expect(() => loadInfraConfig()).toThrow(
+      "emailVerification.senderEmail is required when emailVerification is enabled"
+    );
+  });
+
+  it("throws when emailVerification enabled without siteUrl", () => {
+    mockReadFileSync.mockReturnValue(`
+storageBackend: dynamodb
+emailVerification:
+  enabled: true
+  senderEmail: noreply@example.com
+`);
+    expect(() => loadInfraConfig()).toThrow(
+      "siteUrl is required when emailVerification is enabled"
+    );
+  });
+
+  it("accepts emailVerification enabled with senderEmail and siteUrl", () => {
+    mockReadFileSync.mockReturnValue(`
+storageBackend: dynamodb
+siteUrl: https://example.com
+brandName: TestBrand
+emailVerification:
+  enabled: true
+  senderEmail: noreply@example.com
+  tokenExpiryHours: 48
+`);
+    const config = loadInfraConfig();
+    expect(config.emailVerification.enabled).toBe(true);
+    expect(config.emailVerification.senderEmail).toBe("noreply@example.com");
+    expect(config.emailVerification.tokenExpiryHours).toBe(48);
+    expect(config.siteUrl).toBe("https://example.com");
+    expect(config.brandName).toBe("TestBrand");
+  });
+
+  it("defaults siteUrl and brandName to empty strings", () => {
+    mockReadFileSync.mockReturnValue(VALID_YAML);
+    const config = loadInfraConfig();
+    expect(config.siteUrl).toBe("");
+    expect(config.brandName).toBe("");
+  });
+
   it("defaults are correct in actual config.yaml on disk", () => {
     // Read the real config.yaml to verify defaults
     const realConfigPath = path.join(__dirname, "..", "config.yaml");

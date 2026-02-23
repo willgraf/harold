@@ -1,3 +1,10 @@
 storageBackend: dynamodb  # or 'postgres'
 databaseUrl: ""           # only needed for postgres
 domainName: ""            # optional custom domain (future)
+siteUrl: ""               # e.g. https://example.com — required when emailVerification enabled
+brandName: ""             # used in verification emails
+
+emailVerification:
+  enabled: false
+  senderEmail: ""         # required when enabled (must be SES-verified)
+  tokenExpiryHours: 24

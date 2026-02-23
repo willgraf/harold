@@ -43,12 +43,14 @@ const lambda = __importStar(require("aws-cdk-lib/aws-lambda"));
 const nodejs = __importStar(require("aws-cdk-lib/aws-lambda-nodejs"));
 const dynamodb = __importStar(require("aws-cdk-lib/aws-dynamodb"));
 const sns = __importStar(require("aws-cdk-lib/aws-sns"));
+const iam = __importStar(require("aws-cdk-lib/aws-iam"));
 const path_1 = __importDefault(require("path"));
 class ApiStack extends cdk.Stack {
     apiUrl;
     constructor(scope, id, props) {
         super(scope, id, props);
         const { config } = props;
+        const verificationEnabled = config.emailVerification.enabled;
         // SNS Topic
         const signupTopic = new sns.Topic(this, "SignupTopic", {
             displayName: "Harold Signup Notifications",
@@ -62,6 +64,17 @@ class ApiStack extends cdk.Stack {
                 billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
                 removalPolicy: cdk.RemovalPolicy.DESTROY,
             });
+            // Add GSI for verification token lookups
+            if (verificationEnabled) {
+                table.addGlobalSecondaryIndex({
+                    indexName: "VerificationTokenIndex",
+                    partitionKey: {
+                        name: "verificationToken",
+                        type: dynamodb.AttributeType.STRING,
+                    },
+                    projectionType: dynamodb.ProjectionType.ALL,
+                });
+            }
         }
         // Lambda
         const signupHandler = new nodejs.NodejsFunction(this, "SignupHandler", {
@@ -71,11 +84,19 @@ class ApiStack extends cdk.Stack {
             environment: {
                 STORAGE_BACKEND: config.storageBackend,
                 SNS_TOPIC_ARN: signupTopic.topicArn,
+                EMAIL_VERIFICATION_ENABLED: String(verificationEnabled),
                 ...(config.storageBackend === "dynamodb" && table
                     ? { TABLE_NAME: table.tableName }
                     : {}),
                 ...(config.storageBackend === "postgres"
                     ? { DATABASE_URL: config.databaseUrl }
+                    : {}),
+                ...(verificationEnabled
+                    ? {
+                        EMAIL_SENDER: config.emailVerification.senderEmail,
+                        EMAIL_VERIFICATION_EXPIRY_HOURS: String(config.emailVerification.tokenExpiryHours),
+                        BRAND_NAME: config.brandName,
+                    }
                     : {}),
             },
             bundling: {
@@ -85,19 +106,40 @@ class ApiStack extends cdk.Stack {
         // Permissions
         signupTopic.grantPublish(signupHandler);
         if (table) {
-            table.grantWriteData(signupHandler);
+            if (verificationEnabled) {
+                table.grantReadWriteData(signupHandler);
+            }
+            else {
+                table.grantWriteData(signupHandler);
+            }
+        }
+        // SES permissions (only when verification enabled)
+        if (verificationEnabled) {
+            signupHandler.addToRolePolicy(new iam.PolicyStatement({
+                actions: ["ses:SendEmail", "ses:SendRawEmail"],
+                resources: ["*"],
+            }));
         }
         // API Gateway
         const api = new apigateway.RestApi(this, "SignupApi", {
             restApiName: "Harold Signup API",
             defaultCorsPreflightOptions: {
                 allowOrigins: apigateway.Cors.ALL_ORIGINS,
-                allowMethods: ["POST", "OPTIONS"],
+                allowMethods: ["POST", "GET", "OPTIONS"],
                 allowHeaders: ["Content-Type"],
             },
         });
+        const lambdaIntegration = new apigateway.LambdaIntegration(signupHandler);
         const signup = api.root.addResource("signup");
-        signup.addMethod("POST", new apigateway.LambdaIntegration(signupHandler));
+        signup.addMethod("POST", lambdaIntegration);
+        // Verify endpoint (always add for consistent API shape)
+        const verify = api.root.addResource("verify");
+        verify.addMethod("GET", lambdaIntegration);
+        // Set API_URL and SITE_URL after API creation
+        signupHandler.addEnvironment("API_URL", api.url);
+        if (verificationEnabled) {
+            signupHandler.addEnvironment("SITE_URL", config.siteUrl);
+        }
         this.apiUrl = api.url;
         new cdk.CfnOutput(this, "ApiUrl", {
             value: api.url,

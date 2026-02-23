@@ -17,5 +17,22 @@ function loadInfraConfig() {
     if (data.storageBackend === "postgres" && !data.databaseUrl) {
         throw new Error("config.yaml: databaseUrl is required when storageBackend is postgres");
     }
-    return data;
+    const evRaw = data.emailVerification || {};
+    const emailVerification = {
+        enabled: evRaw.enabled === true,
+        senderEmail: evRaw.senderEmail || "",
+        tokenExpiryHours: evRaw.tokenExpiryHours || 24,
+    };
+    if (emailVerification.enabled && !emailVerification.senderEmail) {
+        throw new Error("config.yaml: emailVerification.senderEmail is required when emailVerification is enabled");
+    }
+    if (emailVerification.enabled && !data.siteUrl) {
+        throw new Error("config.yaml: siteUrl is required when emailVerification is enabled");
+    }
+    return {
+        ...data,
+        siteUrl: data.siteUrl || "",
+        brandName: data.brandName || "",
+        emailVerification,
+    };
 }

@@ -2,10 +2,19 @@ import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
 
+export interface EmailVerificationConfig {
+  enabled: boolean;
+  senderEmail: string;
+  tokenExpiryHours: number;
+}
+
 export interface InfraConfig {
   storageBackend: "dynamodb" | "postgres";
   databaseUrl: string;
   domainName: string;
+  siteUrl: string;
+  brandName: string;
+  emailVerification: EmailVerificationConfig;
 }
 
 export function loadInfraConfig(): InfraConfig {
@@ -18,5 +27,30 @@ export function loadInfraConfig(): InfraConfig {
   if (data.storageBackend === "postgres" && !data.databaseUrl) {
     throw new Error("config.yaml: databaseUrl is required when storageBackend is postgres");
   }
-  return data as unknown as InfraConfig;
+
+  const evRaw = (data.emailVerification as Record<string, unknown>) || {};
+  const emailVerification: EmailVerificationConfig = {
+    enabled: evRaw.enabled === true,
+    senderEmail: (evRaw.senderEmail as string) || "",
+    tokenExpiryHours: (evRaw.tokenExpiryHours as number) || 24,
+  };
+
+  if (emailVerification.enabled && !emailVerification.senderEmail) {
+    throw new Error(
+      "config.yaml: emailVerification.senderEmail is required when emailVerification is enabled"
+    );
+  }
+
+  if (emailVerification.enabled && !data.siteUrl) {
+    throw new Error(
+      "config.yaml: siteUrl is required when emailVerification is enabled"
+    );
+  }
+
+  return {
+    ...data,
+    siteUrl: (data.siteUrl as string) || "",
+    brandName: (data.brandName as string) || "",
+    emailVerification,
+  } as unknown as InfraConfig;
 }
