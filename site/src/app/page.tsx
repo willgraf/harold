@@ -27,6 +27,8 @@ export default function Home() {
       <SignupForm
         ctaText={config.ctaText}
         successMessage={config.successMessage}
+        verificationPendingMessage={config.verificationPendingMessage}
+        verificationSuccessMessage={config.verificationSuccessMessage}
         apiUrl={config.apiUrl}
       />
       <Footer brandName={config.brandName} />

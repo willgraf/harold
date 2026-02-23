@@ -1,17 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SignupFormProps {
   ctaText: string;
   successMessage: string;
+  verificationPendingMessage: string;
+  verificationSuccessMessage: string;
   apiUrl: string;
 }
 
-export default function SignupForm({ ctaText, successMessage, apiUrl }: SignupFormProps) {
+export default function SignupForm({
+  ctaText,
+  successMessage,
+  verificationPendingMessage,
+  verificationSuccessMessage,
+  apiUrl,
+}: SignupFormProps) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error" | "verified" | "verification-failed"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [verificationRequired, setVerificationRequired] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const verified = params.get("verified");
+    if (verified === "true") {
+      setStatus("verified");
+    } else if (verified === "false") {
+      setStatus("verification-failed");
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,6 +50,8 @@ export default function SignupForm({ ctaText, successMessage, apiUrl }: SignupFo
         throw new Error(data.message || "Signup failed");
       }
 
+      const data = await res.json();
+      setVerificationRequired(data.verificationRequired === true);
       setStatus("success");
       setEmail("");
     } catch (err) {
@@ -37,7 +60,7 @@ export default function SignupForm({ ctaText, successMessage, apiUrl }: SignupFo
     }
   }
 
-  if (status === "success") {
+  if (status === "verified") {
     return (
       <section className="flex flex-col items-center px-6 py-24 text-center">
         <div className="animate-fade-up flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
@@ -47,13 +70,59 @@ export default function SignupForm({ ctaText, successMessage, apiUrl }: SignupFo
           className="animate-fade-up mt-6 text-xl font-normal text-foreground font-display"
           style={{ animationDelay: "0.1s" }}
         >
-          {successMessage}
+          {verificationSuccessMessage}
         </p>
         <p
           className="animate-fade-up mt-2 text-sm text-muted font-body"
           style={{ animationDelay: "0.2s" }}
         >
-          Check your inbox for what comes next.
+          You&apos;re on the list.
+        </p>
+      </section>
+    );
+  }
+
+  if (status === "verification-failed") {
+    return (
+      <section className="flex flex-col items-center px-6 py-24 text-center">
+        <div className="animate-fade-up flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
+          ✗
+        </div>
+        <p
+          className="animate-fade-up mt-6 text-xl font-normal text-foreground font-display"
+          style={{ animationDelay: "0.1s" }}
+        >
+          Verification link expired or invalid.
+        </p>
+        <p
+          className="animate-fade-up mt-2 text-sm text-muted font-body"
+          style={{ animationDelay: "0.2s" }}
+        >
+          Please sign up again.
+        </p>
+      </section>
+    );
+  }
+
+  if (status === "success") {
+    return (
+      <section className="flex flex-col items-center px-6 py-24 text-center">
+        <div className="animate-fade-up flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
+          {verificationRequired ? "✉" : "✓"}
+        </div>
+        <p
+          className="animate-fade-up mt-6 text-xl font-normal text-foreground font-display"
+          style={{ animationDelay: "0.1s" }}
+        >
+          {verificationRequired ? verificationPendingMessage : successMessage}
+        </p>
+        <p
+          className="animate-fade-up mt-2 text-sm text-muted font-body"
+          style={{ animationDelay: "0.2s" }}
+        >
+          {verificationRequired
+            ? "We sent a confirmation link to your email."
+            : "Check your inbox for what comes next."}
         </p>
       </section>
     );

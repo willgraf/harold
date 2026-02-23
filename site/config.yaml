@@ -4,6 +4,8 @@ headline: "Where bold ideas find their audience."
 description: "We're building a platform that connects visionary creators with the communities that champion them. No algorithms. No noise. Just meaningful work, shared with intention."
 ctaText: "Get Early Access"
 successMessage: "Welcome aboard. We'll be in touch."
+verificationPendingMessage: "Check your email to confirm your spot."
+verificationSuccessMessage: "You're confirmed! We'll be in touch."
 features:
   - title: "Curated Discovery"
     description: "Every piece of work is surfaced through human curation, not engagement metrics. Quality rises naturally."
