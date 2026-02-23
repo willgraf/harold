@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3",
+    "@aws-sdk/client-ses": "^3",
     "@aws-sdk/client-sns": "^3",
     "pg": "^8.13.0"
   },
