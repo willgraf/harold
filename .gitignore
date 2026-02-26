@@ -6,3 +6,4 @@ cdk.out/
 *.d.ts
 .env
 .env.local
+lambda/dist/
