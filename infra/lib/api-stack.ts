@@ -15,6 +15,7 @@ interface ApiStackProps extends cdk.StackProps {
 
 export class ApiStack extends cdk.Stack {
   public readonly apiUrl: string;
+  public readonly apiGatewayDomain: string;
 
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
@@ -124,6 +125,7 @@ export class ApiStack extends cdk.Stack {
     signupHandler.addEnvironment("SITE_URL", config.siteUrl);
 
     this.apiUrl = api.url;
+    this.apiGatewayDomain = `${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`;
 
     new cdk.CfnOutput(this, "ApiUrl", {
       value: api.url,

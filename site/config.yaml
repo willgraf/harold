@@ -30,4 +30,4 @@ fonts:
   display: "DM Serif Display"
   body: "Instrument Sans"
 logoUrl: null
-apiUrl: ""
+apiUrl: "/prod"

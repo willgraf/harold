@@ -40,5 +40,7 @@ const api_stack_1 = require("../lib/api-stack");
 const config_1 = require("../lib/config");
 const app = new cdk.App();
 const config = (0, config_1.loadInfraConfig)();
-new static_site_stack_1.StaticSiteStack(app, "HaroldSite");
-new api_stack_1.ApiStack(app, "HaroldApi", { config });
+const apiStack = new api_stack_1.ApiStack(app, "HaroldApi", { config });
+new static_site_stack_1.StaticSiteStack(app, "HaroldSite", {
+    apiGatewayDomain: apiStack.apiGatewayDomain,
+});

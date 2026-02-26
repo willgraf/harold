@@ -66,6 +66,17 @@ class StaticSiteStack extends cdk.Stack {
                 },
             ],
         });
+        // Proxy /prod/* to API Gateway so the site and API share one domain,
+        // eliminating CORS and the need to configure apiUrl after deployment.
+        const apiOrigin = new origins.HttpOrigin(props.apiGatewayDomain, {
+            protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+        });
+        this.distribution.addBehavior("/prod/*", apiOrigin, {
+            allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+            viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+            originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+        });
         new s3deploy.BucketDeployment(this, "DeploySite", {
             sources: [s3deploy.Source.asset(path_1.default.join(__dirname, "..", "..", "site", "out"))],
             destinationBucket: siteBucket,

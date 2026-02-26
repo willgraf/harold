@@ -6,10 +6,14 @@ import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import path from "path";
 import { Construct } from "constructs";
 
+interface StaticSiteProps extends cdk.StackProps {
+  apiGatewayDomain: string;
+}
+
 export class StaticSiteStack extends cdk.Stack {
   public readonly distribution: cloudfront.Distribution;
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: StaticSiteProps) {
     super(scope, id, props);
 
     const siteBucket = new s3.Bucket(this, "SiteBucket", {
@@ -31,6 +35,19 @@ export class StaticSiteStack extends cdk.Stack {
           responseHttpStatus: 200,
         },
       ],
+    });
+
+    // Proxy /prod/* to API Gateway so the site and API share one domain,
+    // eliminating CORS and the need to configure apiUrl after deployment.
+    const apiOrigin = new origins.HttpOrigin(props.apiGatewayDomain, {
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+    });
+    this.distribution.addBehavior("/prod/*", apiOrigin, {
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+      viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+      originRequestPolicy:
+        cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
     });
 
     new s3deploy.BucketDeployment(this, "DeploySite", {

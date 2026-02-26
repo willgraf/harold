@@ -47,6 +47,7 @@ const iam = __importStar(require("aws-cdk-lib/aws-iam"));
 const path_1 = __importDefault(require("path"));
 class ApiStack extends cdk.Stack {
     apiUrl;
+    apiGatewayDomain;
     constructor(scope, id, props) {
         super(scope, id, props);
         const { config } = props;
@@ -137,10 +138,9 @@ class ApiStack extends cdk.Stack {
         verify.addMethod("GET", lambdaIntegration);
         // Set API_URL and SITE_URL after API creation
         signupHandler.addEnvironment("API_URL", api.url);
-        if (verificationEnabled) {
-            signupHandler.addEnvironment("SITE_URL", config.siteUrl);
-        }
+        signupHandler.addEnvironment("SITE_URL", config.siteUrl);
         this.apiUrl = api.url;
+        this.apiGatewayDomain = `${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`;
         new cdk.CfnOutput(this, "ApiUrl", {
             value: api.url,
         });
