@@ -21,6 +21,7 @@ npm -w infra run build    # TypeScript compile
 ```
 
 ```bash
+npm -w infra test                               # All infra tests
 npm -w lambda test                              # All lambda tests
 npm -w lambda test -- --testPathPattern handler  # Single test file
 ```
@@ -78,9 +79,11 @@ Toggled via `infra/config.yaml` → `emailVerification.enabled`. When enabled:
 ## Key Conventions
 
 - YAML for all developer-facing config (not JSON)
-- Jest with ts-jest for tests; tests live in `__tests__/` directories (only `lambda/` has a full test suite currently)
+- Jest with ts-jest for tests; tests live in `__tests__/` directories — `lambda/` and `infra/` both have full suites
 - Mocks for AWS SDK clients are hoisted with `jest.mock()` before imports
 - Lambda env vars (`SNS_TOPIC_ARN`, `STORAGE_BACKEND`, `TABLE_NAME`, `DATABASE_URL`, `EMAIL_VERIFICATION_ENABLED`, `EMAIL_SENDER`, `API_URL`, `SITE_URL`, `BRAND_NAME`, `EMAIL_VERIFICATION_EXPIRY_HOURS`) are set in `beforeEach` blocks in tests
 - Tailwind v4 with `@theme` directive — avoid adding custom CSS; use Tailwind utility classes
 - Adding a new storage backend: implement `SignupRepository` interface (including `verifyEmail`), add a case to `createRepository()` factory in `lambda/repositories/index.ts`
 - Postgres schema changes for verification are in `docs/postgres-migration.sql`
+- Both `lambda/dist/` and `infra/dist/` are committed — rebuild with `npm -w lambda run build` / `npm -w infra run build` and stage changes when modifying source
+- `gh` CLI is not installed — use the GitHub web UI or API for PR/Actions operations
