@@ -120,15 +120,16 @@ export class ApiStack extends cdk.Stack {
     const verify = api.root.addResource("verify");
     verify.addMethod("GET", lambdaIntegration);
 
-    // Set API_URL and SITE_URL after API creation
-    signupHandler.addEnvironment("API_URL", api.url);
+    // Construct API_URL from restApiId rather than api.url to avoid a circular
+    // dependency (api.url references the deployment stage, which depends on the
+    // Lambda permissions that are already set above).
+    this.apiGatewayDomain = `${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`;
+    this.apiUrl = `https://${this.apiGatewayDomain}/prod/`;
+    signupHandler.addEnvironment("API_URL", this.apiUrl);
     signupHandler.addEnvironment("SITE_URL", config.siteUrl);
 
-    this.apiUrl = api.url;
-    this.apiGatewayDomain = `${api.restApiId}.execute-api.${cdk.Aws.REGION}.amazonaws.com`;
-
     new cdk.CfnOutput(this, "ApiUrl", {
-      value: api.url,
+      value: this.apiUrl,
     });
 
     new cdk.CfnOutput(this, "SnsTopicArn", {
