@@ -78,7 +78,7 @@ class StaticSiteStack extends cdk.Stack {
             originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
         });
         new s3deploy.BucketDeployment(this, "DeploySite", {
-            sources: [s3deploy.Source.asset(path_1.default.join(__dirname, "..", "..", "site", "out"))],
+            sources: [s3deploy.Source.asset(path_1.default.join(__dirname, "..", "..", "..", "site", "out"))],
             destinationBucket: siteBucket,
             distribution: this.distribution,
             distributionPaths: ["/*"],

@@ -8,7 +8,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const js_yaml_1 = __importDefault(require("js-yaml"));
 function loadInfraConfig() {
-    const configPath = path_1.default.join(__dirname, "..", "config.yaml");
+    const configPath = path_1.default.join(__dirname, "..", "..", "config.yaml");
     const raw = fs_1.default.readFileSync(configPath, "utf-8");
     const data = js_yaml_1.default.load(raw);
     if (!data || !["dynamodb", "postgres"].includes(data.storageBackend)) {

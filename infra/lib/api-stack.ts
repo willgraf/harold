@@ -53,7 +53,7 @@ export class ApiStack extends cdk.Stack {
 
     // Lambda
     const signupHandler = new nodejs.NodejsFunction(this, "SignupHandler", {
-      entry: path.join(__dirname, "..", "..", "lambda", "handler.ts"),
+      entry: path.join(__dirname, "..", "..", "..", "lambda", "handler.ts"),
       handler: "handler",
       runtime: lambda.Runtime.NODEJS_22_X,
       environment: {

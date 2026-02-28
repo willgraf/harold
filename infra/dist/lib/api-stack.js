@@ -79,7 +79,7 @@ class ApiStack extends cdk.Stack {
         }
         // Lambda
         const signupHandler = new nodejs.NodejsFunction(this, "SignupHandler", {
-            entry: path_1.default.join(__dirname, "..", "..", "lambda", "handler.ts"),
+            entry: path_1.default.join(__dirname, "..", "..", "..", "lambda", "handler.ts"),
             handler: "handler",
             runtime: lambda.Runtime.NODEJS_22_X,
             environment: {

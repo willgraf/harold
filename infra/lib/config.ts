@@ -18,7 +18,7 @@ export interface InfraConfig {
 }
 
 export function loadInfraConfig(): InfraConfig {
-  const configPath = path.join(__dirname, "..", "config.yaml");
+  const configPath = path.join(__dirname, "..", "..", "config.yaml");
   const raw = fs.readFileSync(configPath, "utf-8");
   const data = yaml.load(raw) as Record<string, unknown>;
   if (!data || !["dynamodb", "postgres"].includes(data.storageBackend as string)) {
