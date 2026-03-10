@@ -10,17 +10,23 @@ A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS.
 2. Edit `site/config.yaml` with your brand details
 3. Edit `infra/config.yaml` to choose your storage backend
 4. Install dependencies:
+
    ```bash
    npm install
    ```
+
 5. Build the site:
+
    ```bash
    npm -w site run build
    ```
+
 6. Deploy:
+
    ```bash
    cd infra && npx cdk deploy --all
    ```
+
 7. Your site is live at the CloudFront URL shown in the deploy output.
 
 ## Configuration
@@ -28,7 +34,7 @@ A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS.
 ### site/config.yaml
 
 | Field | Description | Default |
-|-------|-------------|---------|
+| ------- | ------------- | --------- |
 | `brandName` | Your brand/company name | "Arcadia" |
 | `tagline` | Eyebrow text above the headline | "The future of creative collaboration." |
 | `headline` | Main hero headline | "Where bold ideas find their audience." |
@@ -53,7 +59,7 @@ A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS.
 ### infra/config.yaml
 
 | Field | Description | Default |
-|-------|-------------|---------|
+| ------- | ------------- | --------- |
 | `storageBackend` | `dynamodb` or `postgres` | "dynamodb" |
 | `databaseUrl` | PostgreSQL connection string (postgres only) | "" |
 | `domainName` | Custom domain (future) | "" |
@@ -87,6 +93,7 @@ To enable:
 
 1. [Verify your sender address in SES](https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html)
 2. Set in `infra/config.yaml`:
+
    ```yaml
    siteUrl: "https://your-cloudfront-url.cloudfront.net"
    brandName: "Your Brand"
@@ -94,6 +101,7 @@ To enable:
      enabled: true
      senderEmail: "no-reply@yourdomain.com"
    ```
+
 3. Redeploy: `cd infra && npx cdk deploy HaroldApi`
 
 ## SNS Integration Hook
