@@ -21,7 +21,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="relative px-6 py-20 sm:px-10">
+    <section className="relative px-6 py-14 sm:px-10">
       <div className="mx-auto mb-12 h-px max-w-4xl bg-gradient-to-r from-transparent via-muted/20 to-transparent" />
 
       <div className="mx-auto max-w-5xl">
