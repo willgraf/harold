@@ -1,9 +1,10 @@
 interface SocialProofProps {
   line1: string;
   line2: string;
+  githubUrl?: string;
 }
 
-export default function SocialProof({ line1, line2 }: SocialProofProps) {
+export default function SocialProof({ line1, line2, githubUrl }: SocialProofProps) {
   if (!line1 && !line2) return null;
 
   return (
@@ -15,10 +16,22 @@ export default function SocialProof({ line1, line2 }: SocialProofProps) {
         style={{ animationDelay: "0.3s" }}
       >
         {line1 && (
-          <p className="text-sm tracking-wide text-muted">
-            <span className="text-foreground">{line1.split(" ")[0]}</span>{" "}
-            {line1.split(" ").slice(1).join(" ")}
-          </p>
+          githubUrl ? (
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm tracking-wide text-muted transition-colors duration-200 hover:text-foreground"
+            >
+              <span className="text-foreground">{line1.split(" ")[0]}</span>{" "}
+              {line1.split(" ").slice(1).join(" ")}
+            </a>
+          ) : (
+            <p className="text-sm tracking-wide text-muted">
+              <span className="text-foreground">{line1.split(" ")[0]}</span>{" "}
+              {line1.split(" ").slice(1).join(" ")}
+            </p>
+          )
         )}
 
         {line1 && line2 && (

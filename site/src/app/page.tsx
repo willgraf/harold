@@ -34,6 +34,7 @@ export default function Home() {
       <SocialProof
         line1={config.socialProof.line1}
         line2={config.socialProof.line2}
+        githubUrl={config.githubUrl}
       />
       <Footer brandName={config.brandName} githubUrl={config.githubUrl} />
     </main>

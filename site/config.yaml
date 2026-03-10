@@ -6,7 +6,7 @@ ctaText: "Join the Waitlist"
 successMessage: "You're on the list. We'll let you know when Harold 1.0 ships."
 verificationPendingMessage: "Check your email to confirm your spot."
 verificationSuccessMessage: "You're confirmed! We'll keep you posted."
-githubUrl: ""   # e.g. https://github.com/your-org/harold
+githubUrl: "https://github.com/willgraf/harold"
 features:
   - title: "Two files to configure"
     description: "Edit site/config.yaml for branding and infra/config.yaml for infrastructure. Colors, fonts, copy — all in one place."
