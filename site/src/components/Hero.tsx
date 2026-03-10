@@ -1,12 +1,15 @@
+import { ReactNode } from "react";
+
 interface HeroProps {
   brandName: string;
   tagline: string;
   headline: string;
   description: string;
   logoUrl: string | null;
+  children?: ReactNode;
 }
 
-export default function Hero({ headline, tagline, description }: HeroProps) {
+export default function Hero({ headline, tagline, description, children }: HeroProps) {
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-24 pb-16 text-center">
       {/* Background gradient mesh — inline style needed for complex radial-gradient + color-mix */}
@@ -21,7 +24,7 @@ export default function Hero({ headline, tagline, description }: HeroProps) {
         }}
       />
 
-      <div className="relative z-10 max-w-3xl">
+      <div className="relative z-10 w-full max-w-3xl">
         <p
           className="animate-fade-up mb-6 text-xs font-semibold tracking-[0.3em] uppercase text-primary font-body"
           style={{ animationDelay: "0.1s" }}
@@ -42,6 +45,12 @@ export default function Hero({ headline, tagline, description }: HeroProps) {
         >
           {description}
         </p>
+
+        {children && (
+          <div className="animate-fade-up mt-10" style={{ animationDelay: "0.4s" }}>
+            {children}
+          </div>
+        )}
       </div>
 
       {/* Scroll hint */}

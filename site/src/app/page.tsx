@@ -18,18 +18,19 @@ export default function Home() {
         headline={config.headline}
         description={config.description}
         logoUrl={config.logoUrl}
-      />
+      >
+        <SignupForm
+          ctaText={config.ctaText}
+          successMessage={config.successMessage}
+          verificationPendingMessage={config.verificationPendingMessage}
+          verificationSuccessMessage={config.verificationSuccessMessage}
+          apiUrl={config.apiUrl}
+        />
+      </Hero>
       <Features features={config.features} />
       <SocialProof
         line1={config.socialProof.line1}
         line2={config.socialProof.line2}
-      />
-      <SignupForm
-        ctaText={config.ctaText}
-        successMessage={config.successMessage}
-        verificationPendingMessage={config.verificationPendingMessage}
-        verificationSuccessMessage={config.verificationSuccessMessage}
-        apiUrl={config.apiUrl}
       />
       <Footer brandName={config.brandName} />
     </main>
