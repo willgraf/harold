@@ -3,11 +3,14 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
+import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import path from "path";
 import { Construct } from "constructs";
 
 interface StaticSiteProps extends cdk.StackProps {
   apiGatewayDomain: string;
+  domainName?: string;
+  certificateArn?: string;
 }
 
 export class StaticSiteStack extends cdk.Stack {
@@ -22,6 +25,11 @@ export class StaticSiteStack extends cdk.Stack {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
+    const certificate =
+      props.certificateArn
+        ? acm.Certificate.fromCertificateArn(this, "Certificate", props.certificateArn)
+        : undefined;
+
     this.distribution = new cloudfront.Distribution(this, "Distribution", {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket),
@@ -35,6 +43,9 @@ export class StaticSiteStack extends cdk.Stack {
           responseHttpStatus: 200,
         },
       ],
+      ...(props.domainName && certificate
+        ? { domainNames: [props.domainName], certificate }
+        : {}),
     });
 
     // Proxy /prod/* to API Gateway so the site and API share one domain,
@@ -58,7 +69,9 @@ export class StaticSiteStack extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, "SiteUrl", {
-      value: `https://${this.distribution.distributionDomainName}`,
+      value: props.domainName
+        ? `https://${props.domainName}`
+        : `https://${this.distribution.distributionDomainName}`,
     });
   }
 }

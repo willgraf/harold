@@ -10,4 +10,6 @@ const config = loadInfraConfig();
 const apiStack = new ApiStack(app, "HaroldApi", { config });
 new StaticSiteStack(app, "HaroldSite", {
   apiGatewayDomain: apiStack.apiGatewayDomain,
+  domainName: config.domainName || undefined,
+  certificateArn: config.certificateArn || undefined,
 });

@@ -17,6 +17,11 @@ function loadInfraConfig() {
     if (data.storageBackend === "postgres" && !data.databaseUrl) {
         throw new Error("config.yaml: databaseUrl is required when storageBackend is postgres");
     }
+    const domainName = data.domainName || "";
+    const certificateArn = data.certificateArn || "";
+    if (domainName && !certificateArn) {
+        throw new Error("config.yaml: certificateArn is required when domainName is set — create an ACM cert in us-east-1 first");
+    }
     const evRaw = data.emailVerification || {};
     const emailVerification = {
         enabled: evRaw.enabled === true,
@@ -31,6 +36,8 @@ function loadInfraConfig() {
     }
     return {
         ...data,
+        domainName,
+        certificateArn,
         siteUrl: data.siteUrl || "",
         brandName: data.brandName || "",
         emailVerification,

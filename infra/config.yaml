@@ -1,6 +1,7 @@
 storageBackend: dynamodb  # or 'postgres'
 databaseUrl: ""           # only needed for postgres
-domainName: ""            # optional custom domain (future)
+domainName: ""            # e.g. harold.dev
+certificateArn: ""        # ACM cert ARN (must be in us-east-1) — required when domainName is set
 siteUrl: ""               # e.g. https://example.com — required when emailVerification enabled
 brandName: ""             # used in verification emails
 

@@ -11,7 +11,6 @@ const mockReadFileSync = fs.readFileSync as jest.MockedFunction<
 const VALID_YAML = `
 storageBackend: dynamodb
 databaseUrl: postgres://localhost:5432/mydb
-domainName: example.com
 `;
 
 describe("loadInfraConfig", () => {
@@ -27,13 +26,11 @@ describe("loadInfraConfig", () => {
     expect(mockReadFileSync).toHaveBeenCalledTimes(1);
     expect(config.storageBackend).toBe("dynamodb");
     expect(config.databaseUrl).toBe("postgres://localhost:5432/mydb");
-    expect(config.domainName).toBe("example.com");
   });
 
   it("throws for invalid storageBackend", () => {
     mockReadFileSync.mockReturnValue(`
 storageBackend: redis
-domainName: example.com
 `);
     expect(() => loadInfraConfig()).toThrow('storageBackend must be "dynamodb" or "postgres"');
   });
@@ -41,7 +38,6 @@ domainName: example.com
   it("throws for postgres without databaseUrl", () => {
     mockReadFileSync.mockReturnValue(`
 storageBackend: postgres
-domainName: example.com
 `);
     expect(() => loadInfraConfig()).toThrow("databaseUrl is required when storageBackend is postgres");
   });
@@ -50,11 +46,29 @@ domainName: example.com
     mockReadFileSync.mockReturnValue(`
 storageBackend: postgres
 databaseUrl: postgres://localhost:5432/mydb
-domainName: example.com
 `);
     const config = loadInfraConfig();
     expect(config.storageBackend).toBe("postgres");
     expect(config.databaseUrl).toBe("postgres://localhost:5432/mydb");
+  });
+
+  it("throws when domainName is set without certificateArn", () => {
+    mockReadFileSync.mockReturnValue(`
+storageBackend: dynamodb
+domainName: example.com
+`);
+    expect(() => loadInfraConfig()).toThrow("certificateArn is required when domainName is set");
+  });
+
+  it("accepts domainName with certificateArn", () => {
+    mockReadFileSync.mockReturnValue(`
+storageBackend: dynamodb
+domainName: example.com
+certificateArn: arn:aws:acm:us-east-1:123456789012:certificate/abc-123
+`);
+    const config = loadInfraConfig();
+    expect(config.domainName).toBe("example.com");
+    expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123456789012:certificate/abc-123");
   });
 
   it("defaults emailVerification to disabled", () => {

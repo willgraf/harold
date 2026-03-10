@@ -12,6 +12,7 @@ export interface InfraConfig {
   storageBackend: "dynamodb" | "postgres";
   databaseUrl: string;
   domainName: string;
+  certificateArn: string;
   siteUrl: string;
   brandName: string;
   emailVerification: EmailVerificationConfig;
@@ -26,6 +27,15 @@ export function loadInfraConfig(): InfraConfig {
   }
   if (data.storageBackend === "postgres" && !data.databaseUrl) {
     throw new Error("config.yaml: databaseUrl is required when storageBackend is postgres");
+  }
+
+  const domainName = (data.domainName as string) || "";
+  const certificateArn = (data.certificateArn as string) || "";
+
+  if (domainName && !certificateArn) {
+    throw new Error(
+      "config.yaml: certificateArn is required when domainName is set — create an ACM cert in us-east-1 first"
+    );
   }
 
   const evRaw = (data.emailVerification as Record<string, unknown>) || {};
@@ -49,6 +59,8 @@ export function loadInfraConfig(): InfraConfig {
 
   return {
     ...data,
+    domainName,
+    certificateArn,
     siteUrl: (data.siteUrl as string) || "",
     brandName: (data.brandName as string) || "",
     emailVerification,

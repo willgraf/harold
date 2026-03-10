@@ -43,4 +43,6 @@ const config = (0, config_1.loadInfraConfig)();
 const apiStack = new api_stack_1.ApiStack(app, "HaroldApi", { config });
 new static_site_stack_1.StaticSiteStack(app, "HaroldSite", {
     apiGatewayDomain: apiStack.apiGatewayDomain,
+    domainName: config.domainName || undefined,
+    certificateArn: config.certificateArn || undefined,
 });
