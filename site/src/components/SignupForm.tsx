@@ -62,128 +62,95 @@ export default function SignupForm({
 
   if (status === "verified") {
     return (
-      <section className="flex flex-col items-center px-6 py-24 text-center">
-        <div className="animate-fade-up flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
+      <div className="flex flex-col items-center py-4 text-center">
+        <div className="animate-fade-up flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-xl text-primary">
           ✓
         </div>
         <p
-          className="animate-fade-up mt-6 text-xl font-normal text-foreground font-display"
+          className="animate-fade-up mt-4 text-lg font-normal text-foreground font-display"
           style={{ animationDelay: "0.1s" }}
         >
           {verificationSuccessMessage}
         </p>
-        <p
-          className="animate-fade-up mt-2 text-sm text-muted font-body"
-          style={{ animationDelay: "0.2s" }}
-        >
-          You&apos;re on the list.
-        </p>
-      </section>
+      </div>
     );
   }
 
   if (status === "verification-failed") {
     return (
-      <section className="flex flex-col items-center px-6 py-24 text-center">
-        <div className="animate-fade-up flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
+      <div className="flex flex-col items-center py-4 text-center">
+        <div className="animate-fade-up flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-xl text-primary">
           ✗
         </div>
         <p
-          className="animate-fade-up mt-6 text-xl font-normal text-foreground font-display"
+          className="animate-fade-up mt-4 text-lg font-normal text-foreground font-display"
           style={{ animationDelay: "0.1s" }}
         >
           Verification link expired or invalid.
         </p>
-        <p
-          className="animate-fade-up mt-2 text-sm text-muted font-body"
-          style={{ animationDelay: "0.2s" }}
-        >
+        <p className="animate-fade-up mt-1 text-sm text-muted font-body" style={{ animationDelay: "0.2s" }}>
           Please sign up again.
         </p>
-      </section>
+      </div>
     );
   }
 
   if (status === "success") {
     return (
-      <section className="flex flex-col items-center px-6 py-24 text-center">
-        <div className="animate-fade-up flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-2xl text-primary">
+      <div className="flex flex-col items-center py-4 text-center">
+        <div className="animate-fade-up flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-xl text-primary">
           {verificationRequired ? "✉" : "✓"}
         </div>
         <p
-          className="animate-fade-up mt-6 text-xl font-normal text-foreground font-display"
+          className="animate-fade-up mt-4 text-lg font-normal text-foreground font-display"
           style={{ animationDelay: "0.1s" }}
         >
           {verificationRequired ? verificationPendingMessage : successMessage}
         </p>
-        <p
-          className="animate-fade-up mt-2 text-sm text-muted font-body"
-          style={{ animationDelay: "0.2s" }}
-        >
+        <p className="animate-fade-up mt-1 text-sm text-muted font-body" style={{ animationDelay: "0.2s" }}>
           {verificationRequired
             ? "We sent a confirmation link to your email."
             : "Check your inbox for what comes next."}
         </p>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="px-6 py-24 sm:px-10">
-      <div className="mx-auto max-w-xl text-center">
-        <h2
-          className="animate-fade-up mb-3 text-3xl font-normal text-foreground font-display sm:text-4xl"
-          style={{ animationDelay: "0.2s" }}
+    <div className="w-full">
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-full gap-3"
+      >
+        <input
+          type="email"
+          required
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={status === "loading"}
+          className="flex-1 rounded-xl border border-muted/15 bg-surface px-5 py-4 text-sm text-foreground font-body outline-none transition-all duration-300 placeholder:opacity-40 focus:ring-1 focus:ring-primary disabled:opacity-50"
+        />
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="animate-glow rounded-xl bg-primary px-7 py-4 text-sm font-semibold tracking-wide text-foreground font-body transition-all duration-300 hover:brightness-110 disabled:opacity-50"
         >
-          Be the first to know.
-        </h2>
-        <p
-          className="animate-fade-up mb-10 text-sm text-muted font-body"
-          style={{ animationDelay: "0.3s" }}
-        >
-          Join the waitlist and we&apos;ll let you know when we launch.
-        </p>
+          {status === "loading" ? (
+            <span className="inline-block animate-pulse">Joining...</span>
+          ) : (
+            ctaText
+          )}
+        </button>
+      </form>
 
-        <form
-          onSubmit={handleSubmit}
-          className="animate-fade-up flex w-full gap-3"
-          style={{ animationDelay: "0.4s" }}
-        >
-          <input
-            type="email"
-            required
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={status === "loading"}
-            className="flex-1 rounded-xl border border-muted/15 bg-surface px-5 py-4 text-sm text-foreground font-body outline-none transition-all duration-300 placeholder:opacity-40 focus:ring-1 focus:ring-primary disabled:opacity-50"
-          />
-          <button
-            type="submit"
-            disabled={status === "loading"}
-            className="animate-glow rounded-xl bg-primary px-7 py-4 text-sm font-semibold tracking-wide text-foreground font-body transition-all duration-300 hover:brightness-110 disabled:opacity-50"
-          >
-            {status === "loading" ? (
-              <span className="inline-block animate-pulse">Joining...</span>
-            ) : (
-              ctaText
-            )}
-          </button>
-        </form>
+      {status === "error" && (
+        <p className="animate-fade-up mt-3 text-sm text-primary">{errorMessage}</p>
+      )}
 
-        {status === "error" && (
-          <p className="animate-fade-up mt-4 text-sm text-primary">
-            {errorMessage}
-          </p>
-        )}
-
-        <p
-          className="animate-fade-in mt-6 text-xs text-muted/60 font-body"
-          style={{ animationDelay: "0.6s" }}
-        >
-          No spam. Unsubscribe anytime.
-        </p>
-      </div>
-    </section>
+      <p className="animate-fade-in mt-4 text-xs text-muted/50 font-body" style={{ animationDelay: "0.6s" }}>
+        No spam. Unsubscribe anytime.
+      </p>
+    </div>
   );
 }

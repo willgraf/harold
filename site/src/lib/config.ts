@@ -17,6 +17,7 @@ export interface SiteConfig {
   successMessage: string;
   verificationPendingMessage: string;
   verificationSuccessMessage: string;
+  githubUrl: string;
   features: Feature[];
   socialProof: {
     line1: string;
@@ -41,6 +42,7 @@ export interface SiteConfig {
 const defaults: Partial<SiteConfig> = {
   headline: "",
   description: "",
+  githubUrl: "",
   verificationPendingMessage: "Check your email to confirm your spot.",
   verificationSuccessMessage: "You're confirmed! We'll be in touch.",
   features: [],
