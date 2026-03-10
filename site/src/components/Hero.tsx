@@ -35,14 +35,14 @@ export default function Hero({ headline, tagline, description, githubUrl, childr
 
       <div className="relative z-10 w-full max-w-2xl">
         <p
-          className="animate-fade-up mb-6 text-xs font-semibold tracking-[0.3em] uppercase text-primary font-body"
+          className="animate-fade-up mb-4 text-xs font-semibold tracking-[0.3em] uppercase text-primary font-body"
           style={{ animationDelay: "0.1s" }}
         >
           {tagline}
         </p>
 
         <h1
-          className="text-gradient animate-fade-up mb-6 text-5xl leading-tight font-normal tracking-tight font-display sm:text-7xl sm:leading-[1.1]"
+          className="text-gradient animate-fade-up mb-5 text-5xl leading-tight font-normal tracking-tight font-display sm:text-7xl sm:leading-[1.1]"
           style={{ animationDelay: "0.2s" }}
         >
           {headline}
@@ -56,7 +56,7 @@ export default function Hero({ headline, tagline, description, githubUrl, childr
         </p>
 
         {children && (
-          <div className="animate-fade-up mt-8" style={{ animationDelay: "0.4s" }}>
+          <div className="animate-fade-up mt-7" style={{ animationDelay: "0.4s" }}>
             {children}
           </div>
         )}
@@ -66,7 +66,7 @@ export default function Hero({ headline, tagline, description, githubUrl, childr
             href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="animate-fade-in mt-5 inline-flex items-center gap-2 text-xs text-muted/50 transition-colors duration-200 hover:text-muted font-body"
+            className="animate-fade-in mt-4 inline-flex items-center gap-2 text-xs text-muted/50 transition-colors duration-200 hover:text-muted font-body"
             style={{ animationDelay: "0.6s" }}
           >
             <GitHubIcon />

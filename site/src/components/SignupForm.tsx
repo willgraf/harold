@@ -120,7 +120,7 @@ export default function SignupForm({
     <div className="w-full">
       <form
         onSubmit={handleSubmit}
-        className="flex w-full gap-3"
+        className="flex w-full gap-2"
       >
         <input
           type="email"
@@ -129,12 +129,12 @@ export default function SignupForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={status === "loading"}
-          className="flex-1 rounded-xl border border-muted/15 bg-surface px-5 py-4 text-sm text-foreground font-body outline-none transition-all duration-300 placeholder:opacity-40 focus:ring-1 focus:ring-primary disabled:opacity-50"
+          className="flex-1 rounded-xl border border-muted/25 bg-surface px-5 py-3.5 text-sm text-foreground font-body outline-none transition-all duration-200 placeholder:opacity-40 focus:border-primary/40 focus:ring-1 focus:ring-primary/30 disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          className="animate-glow rounded-xl bg-primary px-7 py-4 text-sm font-semibold tracking-wide text-foreground font-body transition-all duration-300 hover:brightness-110 disabled:opacity-50"
+          className="animate-glow rounded-xl bg-primary px-6 py-3.5 text-sm font-semibold tracking-wide text-foreground font-body transition-all duration-300 hover:brightness-110 disabled:opacity-50"
         >
           {status === "loading" ? (
             <span className="inline-block animate-pulse">Joining...</span>
@@ -148,7 +148,7 @@ export default function SignupForm({
         <p className="animate-fade-up mt-3 text-sm text-primary">{errorMessage}</p>
       )}
 
-      <p className="animate-fade-in mt-4 text-xs text-muted/50 font-body" style={{ animationDelay: "0.6s" }}>
+      <p className="animate-fade-in mt-3 text-xs text-muted/50 font-body" style={{ animationDelay: "0.6s" }}>
         No spam. Unsubscribe anytime.
       </p>
     </div>

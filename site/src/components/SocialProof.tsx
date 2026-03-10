@@ -7,8 +7,8 @@ export default function SocialProof({ line1, line2 }: SocialProofProps) {
   if (!line1 && !line2) return null;
 
   return (
-    <section className="px-6 py-16 sm:px-10">
-      <div className="mx-auto mb-16 h-px max-w-4xl bg-gradient-to-r from-transparent via-muted/20 to-transparent" />
+    <section className="px-6 py-12 sm:px-10">
+      <div className="mx-auto mb-10 h-px max-w-4xl bg-gradient-to-r from-transparent via-muted/20 to-transparent" />
 
       <div
         className="animate-fade-up mx-auto flex max-w-2xl flex-col items-center gap-4 text-center font-body sm:flex-row sm:justify-center sm:gap-12"

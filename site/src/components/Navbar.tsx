@@ -37,8 +37,9 @@ export default function Navbar({ brandName, logoUrl, githubUrl }: NavbarProps) {
             <span className="hidden text-xs tracking-wide sm:inline">GitHub</span>
           </a>
         )}
-        <div className="rounded-full border border-muted/30 px-4 py-1.5 text-xs tracking-wide uppercase text-muted">
-          Coming Soon
+        <div className="flex items-center gap-2 rounded-full border border-muted/20 px-3 py-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+          <span className="text-[11px] tracking-[0.06em] text-muted/70">Coming soon</span>
         </div>
       </div>
     </nav>

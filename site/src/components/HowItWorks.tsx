@@ -21,8 +21,8 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="relative px-6 py-24 sm:px-10">
-      <div className="mx-auto mb-20 h-px max-w-4xl bg-gradient-to-r from-transparent via-muted/20 to-transparent" />
+    <section className="relative px-6 py-20 sm:px-10">
+      <div className="mx-auto mb-12 h-px max-w-4xl bg-gradient-to-r from-transparent via-muted/20 to-transparent" />
 
       <div className="mx-auto max-w-5xl">
         <p
@@ -31,7 +31,7 @@ export default function HowItWorks() {
           How it works
         </p>
         <h2
-          className="animate-fade-up mb-16 text-3xl font-normal text-foreground font-display sm:text-4xl"
+          className="animate-fade-up mb-10 text-3xl font-normal text-foreground font-display sm:text-4xl"
           style={{ animationDelay: "0.1s" }}
         >
           From zero to deployed in three steps.
