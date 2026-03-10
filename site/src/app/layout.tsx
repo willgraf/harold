@@ -7,6 +7,17 @@ const config = loadConfig();
 export const metadata: Metadata = {
   title: `${config.brandName} — Coming Soon`,
   description: config.tagline,
+  themeColor: config.colors.primary,
+  openGraph: {
+    title: `${config.brandName} — Coming Soon`,
+    description: config.tagline,
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: `${config.brandName} — Coming Soon`,
+    description: config.tagline,
+  },
 };
 
 export default function RootLayout({
