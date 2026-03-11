@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { loadConfig } from "@/lib/config";
 import "./globals.css";
 
@@ -7,6 +7,22 @@ const config = loadConfig();
 export const metadata: Metadata = {
   title: `${config.brandName} — Coming Soon`,
   description: config.tagline,
+  ...(config.siteUrl ? { metadataBase: new URL(config.siteUrl) } : {}),
+  openGraph: {
+    title: `${config.brandName} — Coming Soon`,
+    description: config.tagline,
+    type: "website",
+    ...(config.siteUrl ? { url: config.siteUrl } : {}),
+  },
+  twitter: {
+    card: "summary",
+    title: `${config.brandName} — Coming Soon`,
+    description: config.tagline,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: config.colors.primary,
 };
 
 export default function RootLayout({

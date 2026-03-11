@@ -1,24 +1,37 @@
 interface SocialProofProps {
   line1: string;
   line2: string;
+  githubUrl?: string;
 }
 
-export default function SocialProof({ line1, line2 }: SocialProofProps) {
+export default function SocialProof({ line1, line2, githubUrl }: SocialProofProps) {
   if (!line1 && !line2) return null;
 
   return (
-    <section className="px-6 py-16 sm:px-10">
-      <div className="mx-auto mb-16 h-px max-w-4xl bg-gradient-to-r from-transparent via-muted/20 to-transparent" />
+    <section className="px-6 py-12 sm:px-10">
+      <div className="mx-auto mb-10 h-px max-w-4xl bg-gradient-to-r from-transparent via-muted/20 to-transparent" />
 
       <div
         className="animate-fade-up mx-auto flex max-w-2xl flex-col items-center gap-4 text-center font-body sm:flex-row sm:justify-center sm:gap-12"
         style={{ animationDelay: "0.3s" }}
       >
         {line1 && (
-          <p className="text-sm tracking-wide text-muted">
-            <span className="text-foreground">{line1.split(" ")[0]}</span>{" "}
-            {line1.split(" ").slice(1).join(" ")}
-          </p>
+          githubUrl ? (
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm tracking-wide text-muted transition-colors duration-200 hover:text-foreground"
+            >
+              <span className="text-foreground">{line1.split(" ")[0]}</span>{" "}
+              {line1.split(" ").slice(1).join(" ")}
+            </a>
+          ) : (
+            <p className="text-sm tracking-wide text-muted">
+              <span className="text-foreground">{line1.split(" ")[0]}</span>{" "}
+              {line1.split(" ").slice(1).join(" ")}
+            </p>
+          )
         )}
 
         {line1 && line2 && (

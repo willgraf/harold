@@ -2,10 +2,14 @@ export interface SignupRecord {
   email: string;
   timestamp: string;
   ip: string;
+  verificationToken?: string;
+  verificationTokenExpiry?: string;
+  verified?: boolean;
 }
 
 export interface SignupRepository {
   saveSignup(record: SignupRecord): Promise<boolean>;
+  verifyEmail(token: string): Promise<{ success: boolean; email?: string; alreadyVerified?: boolean }>;
 }
 
 export function createRepository(): SignupRepository {
