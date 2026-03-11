@@ -66,7 +66,7 @@ export default function Hero({ headline, tagline, description, githubUrl, childr
             href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="animate-fade-in mt-4 inline-flex items-center gap-2 text-xs text-muted/50 transition-colors duration-200 hover:text-muted font-body"
+            className="animate-fade-in mt-4 mb-8 inline-flex items-center gap-2 text-xs text-muted/50 transition-colors duration-200 hover:text-muted font-body"
             style={{ animationDelay: "0.6s" }}
           >
             <GitHubIcon />
@@ -77,7 +77,7 @@ export default function Hero({ headline, tagline, description, githubUrl, childr
 
       {/* Scroll hint */}
       <div
-        className="animate-fade-in absolute bottom-8 flex flex-col items-center gap-2 text-muted"
+        className="animate-fade-in flex flex-col items-center gap-2 text-muted"
         style={{ animationDelay: "1s" }}
       >
         <span className="text-[10px] tracking-[0.2em] uppercase font-body">Scroll</span>
