@@ -30,10 +30,35 @@ export class StaticSiteStack extends cdk.Stack {
         ? acm.Certificate.fromCertificateArn(this, "Certificate", props.certificateArn)
         : undefined;
 
+    // Redirect www → apex at the edge before hitting the origin.
+    const wwwRedirectFn = props.domainName
+      ? new cloudfront.Function(this, "WwwRedirect", {
+          functionName: "harold-www-redirect",
+          code: cloudfront.FunctionCode.fromInline(
+            [
+              "function handler(event) {",
+              "  var host = event.request.headers.host.value;",
+              "  if (host.startsWith('www.')) {",
+              "    return {",
+              "      statusCode: 301,",
+              "      statusDescription: 'Moved Permanently',",
+              "      headers: { location: { value: 'https://' + host.slice(4) + event.request.uri } }",
+              "    };",
+              "  }",
+              "  return event.request;",
+              "}",
+            ].join("\n")
+          ),
+        })
+      : undefined;
+
     this.distribution = new cloudfront.Distribution(this, "Distribution", {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(siteBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        functionAssociations: wwwRedirectFn
+          ? [{ function: wwwRedirectFn, eventType: cloudfront.FunctionEventType.VIEWER_REQUEST }]
+          : undefined,
       },
       defaultRootObject: "index.html",
       comment: props.domainName ?? "Harold waitlist site",
@@ -45,7 +70,7 @@ export class StaticSiteStack extends cdk.Stack {
         },
       ],
       ...(props.domainName && certificate
-        ? { domainNames: [props.domainName], certificate }
+        ? { domainNames: [props.domainName, `www.${props.domainName}`], certificate }
         : {}),
     });
 
