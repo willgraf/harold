@@ -30,11 +30,13 @@ export function loadInfraConfig(): InfraConfig {
   }
 
   const domainName = (data.domainName as string) || "";
-  const certificateArn = (data.certificateArn as string) || "";
+  // CERTIFICATE_ARN env var takes precedence over config.yaml so the ARN
+  // (which contains the AWS account ID) doesn't need to be committed to git.
+  const certificateArn = process.env.CERTIFICATE_ARN || (data.certificateArn as string) || "";
 
   if (domainName && !certificateArn) {
     throw new Error(
-      "config.yaml: certificateArn is required when domainName is set — create an ACM cert in us-east-1 first"
+      "certificateArn is required when domainName is set — set CERTIFICATE_ARN env var or add it to config.yaml"
     );
   }
 

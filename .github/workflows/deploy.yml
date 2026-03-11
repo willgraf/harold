@@ -40,4 +40,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy
+        env:
+          CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
         run: cd infra && npx cdk deploy --all --require-approval never
