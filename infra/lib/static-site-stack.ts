@@ -36,6 +36,7 @@ export class StaticSiteStack extends cdk.Stack {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       },
       defaultRootObject: "index.html",
+      comment: props.domainName ?? "Harold waitlist site",
       errorResponses: [
         {
           httpStatus: 404,
@@ -47,6 +48,8 @@ export class StaticSiteStack extends cdk.Stack {
         ? { domainNames: [props.domainName], certificate }
         : {}),
     });
+
+    cdk.Tags.of(this.distribution).add("Name", props.domainName ?? "harold-site");
 
     // Proxy /prod/* to API Gateway so the site and API share one domain,
     // eliminating CORS and the need to configure apiUrl after deployment.
