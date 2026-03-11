@@ -18,6 +18,20 @@ export interface InfraConfig {
   emailVerification: EmailVerificationConfig;
 }
 
+/**
+ * Resolves a config value that may reference an environment variable.
+ * "$VAR_NAME" → process.env.VAR_NAME
+ * Direct env var overrides always take precedence over the config file value.
+ */
+function resolveEnvRef(envOverride: string | undefined, configValue: unknown): string {
+  if (envOverride) return envOverride;
+  const str = (configValue as string) || "";
+  if (str.startsWith("$")) {
+    return process.env[str.slice(1)] || "";
+  }
+  return str;
+}
+
 export function loadInfraConfig(): InfraConfig {
   const configPath = path.join(__dirname, "..", "..", "config.yaml");
   const raw = fs.readFileSync(configPath, "utf-8");
@@ -26,10 +40,8 @@ export function loadInfraConfig(): InfraConfig {
     throw new Error('config.yaml: storageBackend must be "dynamodb" or "postgres"');
   }
 
-  // Sensitive values can be set via env vars to avoid committing them to git.
-  // Env vars take precedence over config.yaml values.
-  const databaseUrl = process.env.DATABASE_URL || (data.databaseUrl as string) || "";
-  const certificateArn = process.env.CERTIFICATE_ARN || (data.certificateArn as string) || "";
+  const databaseUrl = resolveEnvRef(process.env.DATABASE_URL, data.databaseUrl);
+  const certificateArn = resolveEnvRef(process.env.CERTIFICATE_ARN, data.certificateArn);
 
   if (data.storageBackend === "postgres" && !databaseUrl) {
     throw new Error("databaseUrl is required when storageBackend is postgres — set DATABASE_URL env var or add it to config.yaml");

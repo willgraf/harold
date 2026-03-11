@@ -54,6 +54,27 @@ databaseUrl: postgres://localhost:5432/mydb
     expect(config.databaseUrl).toBe("postgres://localhost:5432/mydb");
   });
 
+  it("resolves $VAR_NAME references in config values", () => {
+    process.env.DATABASE_URL = "postgres://envhost:5432/envdb";
+    mockReadFileSync.mockReturnValue(`
+storageBackend: postgres
+databaseUrl: $DATABASE_URL
+`);
+    const config = loadInfraConfig();
+    expect(config.databaseUrl).toBe("postgres://envhost:5432/envdb");
+  });
+
+  it("resolves $VAR_NAME for certificateArn", () => {
+    process.env.CERTIFICATE_ARN = "arn:aws:acm:us-east-1:123:certificate/abc";
+    mockReadFileSync.mockReturnValue(`
+storageBackend: dynamodb
+domainName: example.com
+certificateArn: $CERTIFICATE_ARN
+`);
+    const config = loadInfraConfig();
+    expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123:certificate/abc");
+  });
+
   it("accepts postgres with DATABASE_URL env var", () => {
     process.env.DATABASE_URL = "postgres://envhost:5432/envdb";
     mockReadFileSync.mockReturnValue(`
