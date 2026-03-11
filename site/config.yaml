@@ -32,3 +32,4 @@ fonts:
   body: "Instrument Sans"
 logoUrl: null
 apiUrl: "/prod"
+siteUrl: "https://getharold.xyz"

@@ -7,10 +7,12 @@ const config = loadConfig();
 export const metadata: Metadata = {
   title: `${config.brandName} — Coming Soon`,
   description: config.tagline,
+  ...(config.siteUrl ? { metadataBase: new URL(config.siteUrl) } : {}),
   openGraph: {
     title: `${config.brandName} — Coming Soon`,
     description: config.tagline,
     type: "website",
+    ...(config.siteUrl ? { url: config.siteUrl } : {}),
   },
   twitter: {
     card: "summary",
