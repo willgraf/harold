@@ -59,6 +59,7 @@ async function handleSignup(
   const email: string | undefined = body.email;
 
   if (!email || !EMAIL_REGEX.test(email)) {
+    console.log("Signup rejected: invalid email");
     return response(400, { message: "Valid email is required" });
   }
 
@@ -66,6 +67,8 @@ async function handleSignup(
   const ip = event.requestContext?.identity?.sourceIp || "unknown";
   const verificationEnabled =
     process.env.EMAIL_VERIFICATION_ENABLED === "true";
+
+  console.log(`Signup attempt: email=${email} ip=${ip} verification=${verificationEnabled}`);
 
   if (verificationEnabled) {
     const token = generateVerificationToken();
@@ -85,14 +88,19 @@ async function handleSignup(
     });
 
     if (!isNew) {
+      console.log(`Signup duplicate: email=${email}`);
       return response(200, { message: "Already registered" });
     }
+
+    console.log(`Signup saved, sending verification email: email=${email}`);
 
     // Send verification email via SES
     const apiUrl = process.env.API_URL || "";
     const brandName = process.env.BRAND_NAME || "Harold";
     const senderEmail = process.env.EMAIL_SENDER || "";
     const verificationUrl = `${apiUrl}verify?token=${encodeURIComponent(token)}`;
+
+    console.log(`Verification URL: ${verificationUrl}`);
 
     try {
       await ses.send(
@@ -109,6 +117,7 @@ async function handleSignup(
           },
         })
       );
+      console.log(`Verification email sent: email=${email}`);
     } catch (sesErr) {
       console.error("SES send failed (signup saved):", sesErr);
     }
@@ -123,9 +132,11 @@ async function handleSignup(
   const isNew = await repository.saveSignup({ email, timestamp, ip });
 
   if (!isNew) {
+    console.log(`Signup duplicate: email=${email}`);
     return response(200, { message: "Already registered" });
   }
 
+  console.log(`Signup saved, publishing SNS: email=${email}`);
   await publishSns(email, timestamp);
 
   return response(200, { message: "Success" });
@@ -137,16 +148,21 @@ async function handleVerify(
   const siteUrl = process.env.SITE_URL || "";
 
   if (process.env.EMAIL_VERIFICATION_ENABLED !== "true") {
+    console.log("Verify called but EMAIL_VERIFICATION_ENABLED is not true");
     return redirect(`${siteUrl}?verified=false`);
   }
 
   const token = event.queryStringParameters?.token;
 
+  console.log(`Verify attempt: token=${token} tokenLength=${token?.length}`);
+
   if (!token || token.length > 100 || !/^[A-Za-z0-9_-]+$/.test(token)) {
+    console.log(`Verify rejected: token failed validation (length=${token?.length} value=${JSON.stringify(token)})`);
     return redirect(`${siteUrl}?verified=false`);
   }
 
   const result = await repository.verifyEmail(token);
+  console.log(`Verify result: success=${result.success} email=${result.email} alreadyVerified=${result.alreadyVerified}`);
 
   if (result.success && result.email) {
     if (!result.alreadyVerified) {
@@ -167,6 +183,7 @@ export async function handler(
 
   try {
     const path = event.path || "";
+    console.log(`Request: ${event.httpMethod} ${path}`);
 
     if (event.httpMethod === "POST" && path.endsWith("/signup")) {
       return await handleSignup(event);
@@ -181,6 +198,7 @@ export async function handler(
       return await handleSignup(event);
     }
 
+    console.log(`No route matched: ${event.httpMethod} ${path}`);
     return response(404, { message: "Not found" });
   } catch (err) {
     console.error("Handler error:", err);
