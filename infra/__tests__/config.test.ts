@@ -44,7 +44,7 @@ storageBackend: postgres
     expect(() => loadInfraConfig()).toThrow("databaseUrl is required when storageBackend is postgres");
   });
 
-  it("accepts postgres with databaseUrl in config", () => {
+  it("accepts postgres with literal databaseUrl", () => {
     mockReadFileSync.mockReturnValue(`
 storageBackend: postgres
 databaseUrl: postgres://localhost:5432/mydb
@@ -54,41 +54,11 @@ databaseUrl: postgres://localhost:5432/mydb
     expect(config.databaseUrl).toBe("postgres://localhost:5432/mydb");
   });
 
-  it("resolves $VAR_NAME references in config values", () => {
+  it("resolves $VAR_NAME reference for databaseUrl", () => {
     process.env.DATABASE_URL = "postgres://envhost:5432/envdb";
     mockReadFileSync.mockReturnValue(`
 storageBackend: postgres
 databaseUrl: $DATABASE_URL
-`);
-    const config = loadInfraConfig();
-    expect(config.databaseUrl).toBe("postgres://envhost:5432/envdb");
-  });
-
-  it("resolves $VAR_NAME for certificateArn", () => {
-    process.env.CERTIFICATE_ARN = "arn:aws:acm:us-east-1:123:certificate/abc";
-    mockReadFileSync.mockReturnValue(`
-storageBackend: dynamodb
-domainName: example.com
-certificateArn: $CERTIFICATE_ARN
-`);
-    const config = loadInfraConfig();
-    expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123:certificate/abc");
-  });
-
-  it("accepts postgres with DATABASE_URL env var", () => {
-    process.env.DATABASE_URL = "postgres://envhost:5432/envdb";
-    mockReadFileSync.mockReturnValue(`
-storageBackend: postgres
-`);
-    const config = loadInfraConfig();
-    expect(config.databaseUrl).toBe("postgres://envhost:5432/envdb");
-  });
-
-  it("DATABASE_URL env var takes precedence over config", () => {
-    process.env.DATABASE_URL = "postgres://envhost:5432/envdb";
-    mockReadFileSync.mockReturnValue(`
-storageBackend: postgres
-databaseUrl: postgres://confighost:5432/configdb
 `);
     const config = loadInfraConfig();
     expect(config.databaseUrl).toBe("postgres://envhost:5432/envdb");
@@ -102,7 +72,7 @@ domainName: example.com
     expect(() => loadInfraConfig()).toThrow("certificateArn is required when domainName is set");
   });
 
-  it("accepts domainName with certificateArn in config", () => {
+  it("accepts domainName with literal certificateArn", () => {
     mockReadFileSync.mockReturnValue(`
 storageBackend: dynamodb
 domainName: example.com
@@ -113,22 +83,12 @@ certificateArn: arn:aws:acm:us-east-1:123456789012:certificate/abc-123
     expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123456789012:certificate/abc-123");
   });
 
-  it("accepts domainName with CERTIFICATE_ARN env var", () => {
+  it("resolves $VAR_NAME reference for certificateArn", () => {
     process.env.CERTIFICATE_ARN = "arn:aws:acm:us-east-1:123456789012:certificate/env-cert";
     mockReadFileSync.mockReturnValue(`
 storageBackend: dynamodb
 domainName: example.com
-`);
-    const config = loadInfraConfig();
-    expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123456789012:certificate/env-cert");
-  });
-
-  it("CERTIFICATE_ARN env var takes precedence over config", () => {
-    process.env.CERTIFICATE_ARN = "arn:aws:acm:us-east-1:123456789012:certificate/env-cert";
-    mockReadFileSync.mockReturnValue(`
-storageBackend: dynamodb
-domainName: example.com
-certificateArn: arn:aws:acm:us-east-1:123456789012:certificate/config-cert
+certificateArn: $CERTIFICATE_ARN
 `);
     const config = loadInfraConfig();
     expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123456789012:certificate/env-cert");

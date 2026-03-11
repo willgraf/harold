@@ -18,13 +18,8 @@ export interface InfraConfig {
   emailVerification: EmailVerificationConfig;
 }
 
-/**
- * Resolves a config value that may reference an environment variable.
- * "$VAR_NAME" → process.env.VAR_NAME
- * Direct env var overrides always take precedence over the config file value.
- */
-function resolveEnvRef(envOverride: string | undefined, configValue: unknown): string {
-  if (envOverride) return envOverride;
+/** Resolves "$VAR_NAME" references to their environment variable values. */
+function resolveEnvRef(configValue: unknown): string {
   const str = (configValue as string) || "";
   if (str.startsWith("$")) {
     return process.env[str.slice(1)] || "";
@@ -40,18 +35,18 @@ export function loadInfraConfig(): InfraConfig {
     throw new Error('config.yaml: storageBackend must be "dynamodb" or "postgres"');
   }
 
-  const databaseUrl = resolveEnvRef(process.env.DATABASE_URL, data.databaseUrl);
-  const certificateArn = resolveEnvRef(process.env.CERTIFICATE_ARN, data.certificateArn);
+  const databaseUrl = resolveEnvRef(data.databaseUrl);
+  const certificateArn = resolveEnvRef(data.certificateArn);
 
   if (data.storageBackend === "postgres" && !databaseUrl) {
-    throw new Error("databaseUrl is required when storageBackend is postgres — set DATABASE_URL env var or add it to config.yaml");
+    throw new Error('databaseUrl is required when storageBackend is postgres — use databaseUrl: "$DATABASE_URL" in config.yaml');
   }
 
   const domainName = (data.domainName as string) || "";
 
   if (domainName && !certificateArn) {
     throw new Error(
-      "certificateArn is required when domainName is set — set CERTIFICATE_ARN env var or add it to config.yaml"
+      'certificateArn is required when domainName is set — use certificateArn: "$CERTIFICATE_ARN" in config.yaml'
     );
   }
 
