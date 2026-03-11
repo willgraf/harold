@@ -6,6 +6,6 @@ siteUrl: "https://getharold.xyz"  # e.g. https://example.com — required when e
 brandName: ""             # used in verification emails
 
 emailVerification:
-  enabled: false
-  senderEmail: ""         # required when enabled (must be SES-verified)
+  enabled: true
+  senderEmail: "no-reply@getharold.xyz" # required when enabled (must be SES-verified)
   tokenExpiryHours: 24
