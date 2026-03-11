@@ -35,26 +35,29 @@ A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS.
 
 | Field | Description | Default |
 | ------- | ------------- | --------- |
-| `brandName` | Your brand/company name | "Arcadia" |
-| `tagline` | Eyebrow text above the headline | "The future of creative collaboration." |
-| `headline` | Main hero headline | "Where bold ideas find their audience." |
-| `description` | Body text below the headline | (lorem ipsum) |
-| `ctaText` | Signup button text | "Get Early Access" |
+| `brandName` | Your brand/company name | required |
+| `tagline` | Eyebrow text above the headline | "" |
+| `headline` | Main hero headline | "" |
+| `description` | Body text below the headline | "" |
+| `ctaText` | Signup button text | required |
 | `successMessage` | Shown after successful signup (no verification) | "Welcome aboard. We'll be in touch." |
 | `verificationPendingMessage` | Shown after signup when verification is enabled | "Check your email to confirm your spot." |
 | `verificationSuccessMessage` | Shown after email is verified | "You're confirmed! We'll be in touch." |
-| `features` | Array of `{title, description, icon}` | 3 example features |
-| `socialProof.line1` | First stat/proof line | "2,400+ creators on the waitlist" |
-| `socialProof.line2` | Second stat/proof line | "Launching Spring 2026" |
+| `githubUrl` | Link to your GitHub repo — shown in nav, hero, and footer | "" |
+| `siteUrl` | Canonical URL — used for OG metadata | "" |
+| `features` | Array of `{title, description, icon}` feature cards | [] |
+| `socialProof.line1` | First stat/proof line | "" |
+| `socialProof.line2` | Second stat/proof line | "" |
 | `colors.primary` | Primary accent color | "#D4593C" |
 | `colors.accent` | Secondary accent | "#E8A84C" |
 | `colors.background` | Page background | "#09090B" |
 | `colors.surface` | Card/input backgrounds | "#13131A" |
 | `colors.text` | Primary text color | "#EDE9E1" |
 | `colors.textMuted` | Secondary text color | "#7A756E" |
-| `fonts.display` | Headline font (Google Fonts) | "DM Serif Display" |
-| `fonts.body` | Body font (Google Fonts) | "Instrument Sans" |
-| `logoUrl` | URL to your logo (optional) | null |
+| `fonts.display` | Headline font (Google Fonts name) | "DM Serif Display" |
+| `fonts.body` | Body font (Google Fonts name) | "Instrument Sans" |
+| `logoUrl` | URL to your logo image (optional) | null |
+| `apiUrl` | API endpoint — use `/prod` when deploying via CDK | "/prod" |
 
 ### infra/config.yaml
 
@@ -62,12 +65,46 @@ A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS.
 | ------- | ------------- | --------- |
 | `storageBackend` | `dynamodb` or `postgres` | "dynamodb" |
 | `databaseUrl` | PostgreSQL connection string (postgres only) | "" |
-| `domainName` | Custom domain (future) | "" |
-| `siteUrl` | Your CloudFront URL — required when email verification is enabled | "" |
+| `domainName` | Custom domain e.g. `example.com` — see [Custom Domain](#custom-domain) | "" |
+| `certificateArn` | ACM certificate ARN (must be in us-east-1) — required when `domainName` is set | "" |
+| `siteUrl` | Your site's URL — required when email verification is enabled | "" |
 | `brandName` | Used in verification email subject and body | "" |
 | `emailVerification.enabled` | Send a verification email before confirming signup | false |
 | `emailVerification.senderEmail` | From address for verification emails (must be SES-verified) | "" |
 | `emailVerification.tokenExpiryHours` | How long a verification link stays valid | 24 |
+
+## Custom Domain
+
+By default Harold deploys to a CloudFront URL like `https://d1k29j.cloudfront.net`. To use your own domain:
+
+### 1. Request an ACM certificate
+
+ACM certificates for CloudFront **must be created in us-east-1**, regardless of where your stack is deployed.
+
+1. Open [ACM in us-east-1](https://us-east-1.console.aws.amazon.com/acm/home?region=us-east-1)
+2. Click **Request** → **Request a public certificate**
+3. Enter your domain name (e.g. `example.com`)
+4. Choose **DNS validation**
+5. Click **Request**
+
+ACM will show you a CNAME record to add to your DNS provider. Add it and wait for the status to change to **Issued** (usually a few minutes).
+
+### 2. Update infra/config.yaml
+
+```yaml
+domainName: "example.com"
+certificateArn: "arn:aws:acm:us-east-1:123456789012:certificate/abc-123"
+```
+
+### 3. Redeploy
+
+```bash
+cd infra && npx cdk deploy HaroldSite
+```
+
+### 4. Point your DNS at CloudFront
+
+Add a `CNAME` record at your registrar pointing your domain to the CloudFront distribution URL (printed as `SiteUrl` in the deploy output). If your registrar supports `ALIAS` or `ANAME` records you can use those for the root domain instead.
 
 ## Storage Backends
 
@@ -95,7 +132,7 @@ To enable:
 2. Set in `infra/config.yaml`:
 
    ```yaml
-   siteUrl: "https://your-cloudfront-url.cloudfront.net"
+   siteUrl: "https://example.com"
    brandName: "Your Brand"
    emailVerification:
      enabled: true
