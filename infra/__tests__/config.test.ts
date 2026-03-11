@@ -16,6 +16,8 @@ databaseUrl: postgres://localhost:5432/mydb
 describe("loadInfraConfig", () => {
   afterEach(() => {
     jest.resetAllMocks();
+    delete process.env.DATABASE_URL;
+    delete process.env.CERTIFICATE_ARN;
   });
 
   it("loads and parses infra config.yaml", () => {
@@ -42,7 +44,7 @@ storageBackend: postgres
     expect(() => loadInfraConfig()).toThrow("databaseUrl is required when storageBackend is postgres");
   });
 
-  it("accepts postgres with databaseUrl", () => {
+  it("accepts postgres with databaseUrl in config", () => {
     mockReadFileSync.mockReturnValue(`
 storageBackend: postgres
 databaseUrl: postgres://localhost:5432/mydb
@@ -50,6 +52,25 @@ databaseUrl: postgres://localhost:5432/mydb
     const config = loadInfraConfig();
     expect(config.storageBackend).toBe("postgres");
     expect(config.databaseUrl).toBe("postgres://localhost:5432/mydb");
+  });
+
+  it("accepts postgres with DATABASE_URL env var", () => {
+    process.env.DATABASE_URL = "postgres://envhost:5432/envdb";
+    mockReadFileSync.mockReturnValue(`
+storageBackend: postgres
+`);
+    const config = loadInfraConfig();
+    expect(config.databaseUrl).toBe("postgres://envhost:5432/envdb");
+  });
+
+  it("DATABASE_URL env var takes precedence over config", () => {
+    process.env.DATABASE_URL = "postgres://envhost:5432/envdb";
+    mockReadFileSync.mockReturnValue(`
+storageBackend: postgres
+databaseUrl: postgres://confighost:5432/configdb
+`);
+    const config = loadInfraConfig();
+    expect(config.databaseUrl).toBe("postgres://envhost:5432/envdb");
   });
 
   it("throws when domainName is set without certificateArn", () => {
@@ -60,7 +81,7 @@ domainName: example.com
     expect(() => loadInfraConfig()).toThrow("certificateArn is required when domainName is set");
   });
 
-  it("accepts domainName with certificateArn", () => {
+  it("accepts domainName with certificateArn in config", () => {
     mockReadFileSync.mockReturnValue(`
 storageBackend: dynamodb
 domainName: example.com
@@ -69,6 +90,27 @@ certificateArn: arn:aws:acm:us-east-1:123456789012:certificate/abc-123
     const config = loadInfraConfig();
     expect(config.domainName).toBe("example.com");
     expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123456789012:certificate/abc-123");
+  });
+
+  it("accepts domainName with CERTIFICATE_ARN env var", () => {
+    process.env.CERTIFICATE_ARN = "arn:aws:acm:us-east-1:123456789012:certificate/env-cert";
+    mockReadFileSync.mockReturnValue(`
+storageBackend: dynamodb
+domainName: example.com
+`);
+    const config = loadInfraConfig();
+    expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123456789012:certificate/env-cert");
+  });
+
+  it("CERTIFICATE_ARN env var takes precedence over config", () => {
+    process.env.CERTIFICATE_ARN = "arn:aws:acm:us-east-1:123456789012:certificate/env-cert";
+    mockReadFileSync.mockReturnValue(`
+storageBackend: dynamodb
+domainName: example.com
+certificateArn: arn:aws:acm:us-east-1:123456789012:certificate/config-cert
+`);
+    const config = loadInfraConfig();
+    expect(config.certificateArn).toBe("arn:aws:acm:us-east-1:123456789012:certificate/env-cert");
   });
 
   it("defaults emailVerification to disabled", () => {
@@ -131,7 +173,6 @@ emailVerification:
   });
 
   it("defaults are correct in actual config.yaml on disk", () => {
-    // Read the real config.yaml to verify defaults
     const realConfigPath = path.join(__dirname, "..", "config.yaml");
     const realContent = jest.requireActual("fs").readFileSync(realConfigPath, "utf-8");
     const realConfig = yaml.load(realContent) as Record<string, unknown>;

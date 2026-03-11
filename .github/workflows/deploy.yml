@@ -42,4 +42,5 @@ jobs:
       - name: Deploy
         env:
           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: cd infra && npx cdk deploy --all --require-approval never

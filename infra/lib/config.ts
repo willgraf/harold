@@ -25,14 +25,17 @@ export function loadInfraConfig(): InfraConfig {
   if (!data || !["dynamodb", "postgres"].includes(data.storageBackend as string)) {
     throw new Error('config.yaml: storageBackend must be "dynamodb" or "postgres"');
   }
-  if (data.storageBackend === "postgres" && !data.databaseUrl) {
-    throw new Error("config.yaml: databaseUrl is required when storageBackend is postgres");
+
+  // Sensitive values can be set via env vars to avoid committing them to git.
+  // Env vars take precedence over config.yaml values.
+  const databaseUrl = process.env.DATABASE_URL || (data.databaseUrl as string) || "";
+  const certificateArn = process.env.CERTIFICATE_ARN || (data.certificateArn as string) || "";
+
+  if (data.storageBackend === "postgres" && !databaseUrl) {
+    throw new Error("databaseUrl is required when storageBackend is postgres — set DATABASE_URL env var or add it to config.yaml");
   }
 
   const domainName = (data.domainName as string) || "";
-  // CERTIFICATE_ARN env var takes precedence over config.yaml so the ARN
-  // (which contains the AWS account ID) doesn't need to be committed to git.
-  const certificateArn = process.env.CERTIFICATE_ARN || (data.certificateArn as string) || "";
 
   if (domainName && !certificateArn) {
     throw new Error(
@@ -61,6 +64,7 @@ export function loadInfraConfig(): InfraConfig {
 
   return {
     ...data,
+    databaseUrl,
     domainName,
     certificateArn,
     siteUrl: (data.siteUrl as string) || "",
