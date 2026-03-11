@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+require("dotenv/config");
 const cdk = __importStar(require("aws-cdk-lib"));
 const static_site_stack_1 = require("../lib/static-site-stack");
 const api_stack_1 = require("../lib/api-stack");

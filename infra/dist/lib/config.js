@@ -18,9 +18,11 @@ function loadInfraConfig() {
         throw new Error("config.yaml: databaseUrl is required when storageBackend is postgres");
     }
     const domainName = data.domainName || "";
-    const certificateArn = data.certificateArn || "";
+    // CERTIFICATE_ARN env var takes precedence over config.yaml so the ARN
+    // (which contains the AWS account ID) doesn't need to be committed to git.
+    const certificateArn = process.env.CERTIFICATE_ARN || data.certificateArn || "";
     if (domainName && !certificateArn) {
-        throw new Error("config.yaml: certificateArn is required when domainName is set — create an ACM cert in us-east-1 first");
+        throw new Error("certificateArn is required when domainName is set — set CERTIFICATE_ARN env var or add it to config.yaml");
     }
     const evRaw = data.emailVerification || {};
     const emailVerification = {
