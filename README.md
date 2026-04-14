@@ -21,7 +21,13 @@ A scaffold for deploying "Coming Soon / Join the Waitlist" landing pages on AWS.
    npm -w site run build
    ```
 
-6. Deploy:
+6. Bootstrap CDK (one-time per AWS account/region):
+
+   ```bash
+   cd infra && npx cdk bootstrap
+   ```
+
+7. Deploy:
 
    ```bash
    cd infra && npx cdk deploy --all
