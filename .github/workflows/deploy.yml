@@ -39,6 +39,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Bootstrap
+        run: cd infra && npx cdk bootstrap
+
       - name: Deploy
         env:
           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
