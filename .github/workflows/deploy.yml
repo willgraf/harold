@@ -40,6 +40,9 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Bootstrap
+        env:
+          CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: cd infra && npx cdk bootstrap
 
       - name: Deploy
