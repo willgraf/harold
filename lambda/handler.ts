@@ -100,8 +100,6 @@ async function handleSignup(
     const senderEmail = process.env.EMAIL_SENDER || "";
     const verificationUrl = `${apiUrl}verify?token=${encodeURIComponent(token)}`;
 
-    console.log(`Verification URL: ${verificationUrl}`);
-
     try {
       await ses.send(
         new SendEmailCommand({
