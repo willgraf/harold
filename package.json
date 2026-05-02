@@ -1,5 +1,6 @@
 {
   "name": "harold",
+  "license": "MIT",
   "private": true,
   "workspaces": ["site", "lambda", "infra"]
 }

@@ -85,5 +85,5 @@ Toggled via `infra/config.yaml` → `emailVerification.enabled`. When enabled:
 - Tailwind v4 with `@theme` directive — avoid adding custom CSS; use Tailwind utility classes
 - Adding a new storage backend: implement `SignupRepository` interface (including `verifyEmail`), add a case to `createRepository()` factory in `lambda/repositories/index.ts`
 - Postgres schema changes for verification are in `docs/postgres-migration.sql`
-- Both `lambda/dist/` and `infra/dist/` are committed — rebuild with `npm -w lambda run build` / `npm -w infra run build` and stage changes when modifying source
+- `lambda/dist/` and `infra/dist/` are gitignored and not committed — the CI/CD workflow builds them before deploying; run `npm -w lambda run build` / `npm -w infra run build` locally before running `cdk deploy`
 - `gh` CLI is not installed — use the GitHub web UI or API for PR/Actions operations
