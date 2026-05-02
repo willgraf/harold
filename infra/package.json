@@ -7,7 +7,7 @@
     "test": "jest --config jest.config.js"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2",
+    "aws-cdk-lib": "^2.252.0",
     "constructs": "^10",
     "dotenv": "^17.3.1",
     "js-yaml": "^4.1.0"
