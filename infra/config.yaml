@@ -1,11 +1,11 @@
 storageBackend: dynamodb  # or 'postgres'
 databaseUrl: ""           # only needed for postgres
-domainName: "getharold.xyz"            # e.g. harold.dev
+domainName: "getharold.xyz"          # Replace with your domain
 certificateArn: "$CERTIFICATE_ARN"  # set CERTIFICATE_ARN env var (avoids committing AWS account ID)
 siteUrl: "https://getharold.xyz"  # e.g. https://example.com — required when emailVerification enabled
 brandName: ""             # used in verification emails
 
 emailVerification:
   enabled: true
-  senderEmail: "no-reply@getharold.xyz" # required when enabled (must be SES-verified)
+  senderEmail: "no-reply@getharold.xyz" # Replace with your email address
   tokenExpiryHours: 24
